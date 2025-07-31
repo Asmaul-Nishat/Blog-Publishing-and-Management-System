@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Dashboard - MyBlog</title>
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --font-family: 'Merriweather', serif;
+      --black: #000000;
+      --white: #f0f0f0;
+      --gray: #dddddd;
+      --input-border: #999999;
+      --button-hover-bg: #cb9191;
+      --label-text-default: #666666;
+      --error-text: red;
+      --radius: 12px;
+      --transition: 0.3s ease;
+      --max-width: 1200px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background: var(--white);
+      color: var(--black);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: row;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    /* Sidebar styles */
+    .sidebar {
+      width: 250px;
+      background: var(--white);
+      border-right: 1px solid var(--gray);
+      padding: 1.5rem 1rem;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+      transition: left 0.3s ease;
+      z-index: 1000;
+      left: 0;
+    }
+
+    .sidebar.closed {
+      left: -260px;
+    }
+
+    .sidebar .logo {
+      font-size: 1.8rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--gray);
+      color: var(--button-hover-bg);
+    }
+
+    .sidebar nav {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar nav a {
+      display: flex;
+      align-items: center;
+      padding: 0.8rem 1rem;
+      margin-bottom: 0.3rem;
+      font-weight: 500;
+      border-radius: var(--radius);
+      transition: background var(--transition);
+    }
+
+    .sidebar nav a span.icon {
+      margin-right: 0.8rem;
+      font-size: 1.1rem;
+      width: 20px;
+      display: inline-block;
+      text-align: center;
+    }
+
+    .sidebar nav a:hover,
+    .sidebar nav a.active {
+      background: var(--button-hover-bg);
+      color: var(--white);
+    }
+
+    /* Main content */
+    main.main-content {
+      margin-left: 250px;
+      padding: 2rem;
+      flex-grow: 1;
+      max-width: calc(100% - 250px);
+      transition: margin-left 0.3s ease;
+    }
+
+    main.main-content.full-width {
+      margin-left: 0;
+      max-width: 100%;
+    }
+
+    h1, h2, h3 {
+      margin-bottom: 1rem;
+      font-weight: 700;
+    }
+
+    .dashboard-widgets {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+
+    .widget {
+      background: var(--gray);
+      border: 1px solid var(--input-border);
+      flex: 1 1 150px;
+      padding: 1rem 1.5rem;
+      border-radius: var(--radius);
+      text-align: center;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.07);
+    }
+
+    .widget h3 {
+      font-size: 2rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .widget p {
+      font-weight: 600;
+      color: var(--label-text-default);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 2rem;
+    }
+
+    th, td {
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--gray);
+      text-align: left;
+    }
+
+    th {
+      background: var(--white);
+      color: var(--black);
+    }
+
+    tbody tr:hover {
+      background: #f8f8f8;
+    }
+
+    .actions button {
+      margin-right: 0.5rem;
+      padding: 0.3rem 0.6rem;
+      border: 1px solid var(--black);
+      background: none;
+      font-size: 0.9rem;
+      border-radius: var(--radius);
+      color: var(--black);
+      transition: var(--transition);
+    }
+
+    .actions button:hover {
+      background: var(--button-hover-bg);
+      color: var(--white);
+      border-color: var(--button-hover-bg);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    form.settings-form label {
+      font-weight: 600;
+      display: block;
+      margin: 1rem 0 0.3rem;
+    }
+
+    form.settings-form input,
+    form.settings-form textarea,
+    form.settings-form select {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid var(--input-border);
+      border-radius: var(--radius);
+      background: var(--white);
+      color: var(--black);
+    }
+
+    form.settings-form button {
+      margin-top: 1rem;
+      padding: 0.6rem 1.2rem;
+      background: var(--button-hover-bg);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius);
+      font-weight: 600;
+      transition: var(--transition);
+    }
+
+    form.settings-form button:hover {
+      background: var(--black);
+    }
+
+    /* Search bar styling */
+    #search-posts {
+      margin-bottom: 1rem;
+      padding: 0.5rem;
+      width: 100%;
+      max-width: 400px;
+      border-radius: var(--radius);
+      border: 1px solid var(--input-border);
+    }
+
+    /* Sidebar toggle button for small screens */
+    #sidebar-toggle {
+      display: none;
+      position: fixed;
+      top: 1rem;
+      left: 1rem;
+      background: var(--button-hover-bg);
+      color: var(--white);
+      border: none;
+      font-size: 1.8rem;
+      border-radius: var(--radius);
+      cursor: pointer;
+      z-index: 1100;
+      width: 40px;
+      height: 40px;
+      line-height: 36px;
+      text-align: center;
+      padding: 0;
+      user-select: none;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
+
+      #sidebar-toggle {
+        display: block;
+      }
+
+      .sidebar {
+        width: 250px;
+        height: 100vh;
+        flex-direction: column;
+        position: fixed;
+        top: 0;
+        left: -260px;
+        background: var(--white);
+        border-right: 1px solid var(--gray);
+        padding-top: 3rem;
+        transition: left 0.3s ease;
+      }
+
+      .sidebar.open {
+        left: 0;
+      }
+
+      .sidebar nav {
+        flex-direction: column;
+        overflow-y: auto;
+        height: calc(100vh - 3rem);
+      }
+
+      main.main-content {
+        margin-left: 0;
+        padding: 1rem;
+        max-width: 100%;
+      }
+
+      .dashboard-widgets {
+        flex-direction: column;
+      }
+    }
+
+    /* Blog cards styling inside dashboard */
+    .blog-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill,minmax(280px,1fr));
+      gap: 1rem;
+    }
+
+    .blog-card {
+      background: var(--gray);
+      border-radius: var(--radius);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.07);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      cursor: default;
+      transition: transform var(--transition);
+      position: relative;
+    }
+
+    .blog-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+
+    .blog-card img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+    }
+
+    .blog-content {
+      padding: 1rem 1.2rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .blog-title {
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+      color: var(--black);
+    }
+
+    .blog-title a {
+      color: var(--black);
+      text-decoration: none;
+    }
+    .blog-title a:hover {
+      text-decoration: underline;
+    }
+
+    .blog-excerpt {
+      font-size: 0.9rem;
+      color: var(--label-text-default);
+      flex-grow: 1;
+    }
+
+    .blog-meta {
+      margin-top: 1rem;
+      font-size: 0.8rem;
+      color: var(--label-text-default);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+    }
+
+    /* Categories table input and add button */
+    #add-category-form {
+      margin-top: 1rem;
+      display: flex;
+      gap: 0.5rem;
+      max-width: 400px;
+    }
+
+    #add-category-form input[type="text"] {
+      flex-grow: 1;
+      padding: 0.5rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--input-border);
+    }
+
+    #add-category-form button {
+      background: var(--button-hover-bg);
+      border: none;
+      color: var(--white);
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius);
+      font-weight: 600;
+      transition: var(--transition);
+    }
+
+    #add-category-form button:hover {
+      background: var(--black);
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <button id="sidebar-toggle" aria-label="Toggle sidebar navigation">☰</button>
+
+  <aside class="sidebar" role="navigation" aria-label="Admin dashboard navigation">
+    <a href="/index.html" class="logo">Blogg</a>
+
+    <nav>
+      <a href="#" class="active" data-tab="dashboard" aria-current="page"><span class="icon">🏠</span> Dashboard</a>
+      <a href="#" data-tab="posts"><span class="icon">📝</span> Manage Posts</a>
+      <a href="#" data-tab="users"><span class="icon">👤</span> Manage Users</a>
+      <a href="#" data-tab="categories"><span class="icon">📂</span> Categories</a>
+      <a href="#" data-tab="comments"><span class="icon">💬</span> Comments</a>
+      <a href="#" data-tab="analytics"><span class="icon">📈</span> Analytics</a>
+      <a href="#" data-tab="settings"><span class="icon">⚙️</span> Settings</a>
+      <a href="logout.php"><span class="icon">🔓</span> Logout</a>
+    </nav>
+  </aside>
+
+  <main class="main-content" role="main">
+    <!-- Dashboard -->
+    <section id="dashboard" class="tab-content active" tabindex="0">
+      <h1>Dashboard Overview</h1>
+      <div class="dashboard-widgets">
+        <div class="widget"><h3>124</h3><p>Total Posts</p></div>
+        <div class="widget"><h3>32</h3><p>Total Users</p></div>
+        <div class="widget"><h3>10</h3><p>Categories</p></div>
+        <div class="widget"><h3>5</h3><p>Pending Posts</p></div>
+        <div class="widget"><h3>7</h3><p>New Comments</p></div>
+        <div class="widget"><h3>15,232</h3><p>Blog Views</p></div>
+      </div>
+
+      <!-- Blog cards like in blog home page -->
+      <div class="blog-cards" aria-label="Recent blog posts">
+        <!-- Blog cards will be injected by JS -->
+      </div>
+    </section>
+
+    <!-- Posts -->
+    <section id="posts" class="tab-content" tabindex="0">
+      <h1>Manage Posts</h1>
+      <input type="text" id="search-posts" placeholder="Search posts..." aria-label="Search posts" />
+      <table>
+        <thead>
+          <tr><th>ID</th><th>Title</th><th>Author</th><th>Status</th><th>Date</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>101</td><td>Traveling the World</td><td>asmaul</td><td>Published</td><td>2025-06-20</td>
+            <td class="actions">
+              <button type="button">View</button>
+              <button type="button">Edit</button>
+              <button type="button">Delete</button>
+            </td>
+          </tr>
+          <tr>
+            <td>102</td><td>Healthy Eating</td><td>john_doe</td><td>Pending</td><td>2025-06-22</td>
+            <td class="actions">
+              <button type="button">View</button>
+              <button type="button">Edit</button>
+              <button type="button">Approve</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Users -->
+    <section id="users" class="tab-content" tabindex="0">
+      <h1>Manage Users</h1>
+      <table>
+        <thead><tr><th>ID</th><th>Username</th><th>Role</th><th>Email</th><th>Actions</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>1</td><td>asmaul</td><td>Admin</td><td>asmaul@example.com</td>
+            <td class="actions"><button type="button">Edit</button><button type="button">Block</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Categories -->
+    <section id="categories" class="tab-content" tabindex="0">
+      <h1>Manage Categories</h1>
+      <table>
+        <thead><tr><th>ID</th><th>Name</th><th>#Posts</th><th>Actions</th></tr></thead>
+        <tbody id="category-list">
+          <!-- Categories injected by JS -->
+        </tbody>
+      </table>
+
+      <form id="add-category-form" aria-label="Add new category">
+        <input type="text" id="new-category-name" placeholder="New category name" aria-label="New category name" required />
+        <button type="submit">Add Category</button>
+      </form>
+    </section>
+
+    <!-- Comments -->
+    <section id="comments" class="tab-content" tabindex="0">
+      <h1>Manage Comments</h1>
+      <p>No comments yet.</p>
+    </section>
+
+    <!-- Analytics -->
+    <section id="analytics" class="tab-content" tabindex="0">
+      <h1>Analytics</h1>
+      <p>Analytics data coming soon.</p>
+    </section>
+
+    <!-- Settings -->
+    <section id="settings" class="tab-content" tabindex="0">
+      <h1>Settings</h1>
+      <form class="settings-form" novalidate>
+        <label for="site-title">Site Title</label>
+        <input type="text" id="site-title" name="site-title" value="MyBlog" required />
+        <label for="site-description">Site Description</label>
+        <textarea id="site-description" name="site-description" rows="3" required>A professional blogging platform</textarea>
+        <label for="approval-mode">Approval Mode</label>
+        <select id="approval-mode" name="approval-mode" required>
+          <option value="manual">Manual</option>
+          <option value="auto">Auto</option>
+        </select>
+        <label for="contact-email">Contact Email</label>
+        <input type="email" id="contact-email" name="contact-email" value="admin@myblog.com" required />
+        <button type="submit">Save Settings</button>
+      </form>
+    </section>
+  </main>
+
+  <script>
+    // Sample blog data (same as your blog homepage sample)
+    const blogs = [
+      {
+        id: 1,
+        title: "10 Best Beaches to Visit This Summer",
+        excerpt: "Discover pristine sands, turquoise waters, and amazing experiences at these stunning beaches worldwide.",
+        author: "Jane Doe",
+        category: "Travel",
+        uploadTime: "2025-06-20 10:30",
+        likes: 245,
+        comments: 20,
+        img: "/image/karsten-winegeart-Quh5YoaAzfI-unsplash.jpg",
+      },
+      {
+        id: 2,
+        title: "Healthy and Quick Dinner Recipes",
+        excerpt: "Easy-to-make meals packed with nutrients that you can prepare in under 30 minutes.",
+        author: "John Smith",
+        category: "Food",
+        uploadTime: "2025-06-21 17:15",
+        likes: 179,
+        comments: 15,
+        img: "/image/freestocks-OfaDD5o8hpk-unsplash.jpg",
+      },
+      {
+        id: 3,
+        title: "Latest Trends in Technology 2025",
+        excerpt: "Stay ahead with insights on AI, IoT, and futuristic gadgets changing the world.",
+        author: "Alice Johnson",
+        category: "Technology",
+        uploadTime: "2025-06-22 08:45",
+        likes: 310,
+        comments: 32,
+        img: "/image/sincerely-media-zw8t5aMmJQQ-unsplash.jpg",
+      },
+      {
+        id: 4,
+        title: "Meditation: A Path to Inner Peace",
+        excerpt: "Explore techniques and benefits of mindfulness to enhance your mental health.",
+        author: "Michael Lee",
+        category: "Health",
+        uploadTime: "2025-06-23 13:00",
+        likes: 142,
+        comments: 12,
+        img: "/image/andrijana-bozic-IsJ_hbsQiE8-unsplash.jpg",
+      },
+      {
+        id: 5,
+        title: "Education in the Digital Age",
+        excerpt: "How technology is reshaping classrooms and learning worldwide.",
+        author: "Jane Doe",
+        category: "Education",
+        uploadTime: "2025-06-24 09:30",
+        likes: 199,
+        comments: 18,
+        img: "/image/josue-valencia-pOwKTIgjKjU-unsplash.jpg",
+      },
+    ];
+
+    // Categories data with example post counts
+    let categories = [
+      { id: 1, name: "Travel", postsCount: 20 },
+      { id: 2, name: "Food", postsCount: 15 },
+      { id: 3, name: "Technology", postsCount: 30 },
+      { id: 4, name: "Health", postsCount: 12 },
+      { id: 5, name: "Education", postsCount: 18 }
+    ];
+
+    // Render blog cards inside dashboard
+    function renderBlogCards() {
+      const container = document.querySelector('.blog-cards');
+      container.innerHTML = '';
+      blogs.forEach(blog => {
+        const card = document.createElement('article');
+        card.className = 'blog-card';
+        card.tabIndex = 0;
+        card.setAttribute('role', 'article');
+        card.setAttribute('aria-label', `${blog.title} by ${blog.author}`);
+        card.innerHTML = `
+          <img src="${blog.img}" alt="Image for ${blog.title}" />
+          <div class="blog-content">
+            <h2 class="blog-title">
+              <a href="blog.html?id=${blog.id}" aria-label="Read full blog post: ${blog.title}">${blog.title}</a>
+            </h2>
+            <p class="blog-excerpt">${blog.excerpt}</p>
+            <div class="blog-meta">
+              <span class="author" tabindex="0" aria-haspopup="true" aria-expanded="false" aria-label="Author: ${blog.author}">${blog.author}</span>
+              <span class="upload-time">${new Date(blog.uploadTime).toLocaleString()}</span>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    renderBlogCards();
+
+    // Render categories table rows
+    function renderCategories() {
+      const tbody = document.getElementById('category-list');
+      tbody.innerHTML = '';
+      categories.forEach(cat => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${cat.id}</td>
+          <td>${cat.name}</td>
+          <td>${cat.postsCount}</td>
+          <td class="actions">
+            <button type="button" data-id="${cat.id}" class="edit-category-btn">Edit</button>
+            <button type="button" data-id="${cat.id}" class="delete-category-btn">Delete</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    renderCategories();
+
+    // Add category form submit handler
+    const addCategoryForm = document.getElementById('add-category-form');
+    addCategoryForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const input = document.getElementById('new-category-name');
+      const newName = input.value.trim();
+      if(newName === '') {
+        alert('Please enter a category name.');
+        return;
+      }
+      // Check duplicate category name
+      const duplicate = categories.some(cat => cat.name.toLowerCase() === newName.toLowerCase());
+      if(duplicate) {
+        alert('Category already exists.');
+        return;
+      }
+      // Add new category with next id and zero posts
+      const newId = categories.length > 0 ? Math.max(...categories.map(c => c.id)) + 1 : 1;
+      categories.push({ id: newId, name: newName, postsCount: 0 });
+      renderCategories();
+      input.value = '';
+    });
+
+    // Edit and Delete buttons event delegation for categories
+    document.getElementById('category-list').addEventListener('click', function(e) {
+      if(e.target.classList.contains('delete-category-btn')) {
+        const id = parseInt(e.target.getAttribute('data-id'), 10);
+        if(confirm('Are you sure you want to delete this category?')) {
+          categories = categories.filter(cat => cat.id !== id);
+          renderCategories();
+        }
+      } else if(e.target.classList.contains('edit-category-btn')) {
+        const id = parseInt(e.target.getAttribute('data-id'), 10);
+        const cat = categories.find(c => c.id === id);
+        if(cat) {
+          const newName = prompt('Edit category name:', cat.name);
+          if(newName && newName.trim() !== '') {
+            const duplicate = categories.some(c => c.name.toLowerCase() === newName.toLowerCase() && c.id !== id);
+            if(duplicate) {
+              alert('Another category with this name already exists.');
+              return;
+            }
+            cat.name = newName.trim();
+            renderCategories();
+          }
+        }
+      }
+    });
+
+    // Tab navigation
+    const tabs = document.querySelectorAll('.sidebar nav a');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', e => {
+        e.preventDefault();
+        const target = tab.getAttribute('data-tab');
+        if (!target) return;
+
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+
+        tabContents.forEach(tc => {
+          if (tc.id === target) {
+            tc.classList.add('active');
+            tc.focus();
+          } else {
+            tc.classList.remove('active');
+          }
+        });
+      });
+    });
+
+    // Sidebar toggle for small screens
+    const sidebar = document.querySelector('.sidebar');
+    const toggleBtn = document.getElementById('sidebar-toggle');
+    toggleBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+    });
+
+    // Search posts in Manage Posts tab (simple filter)
+    const searchInput = document.getElementById('search-posts');
+    if (searchInput) {
+      searchInput.addEventListener('input', e => {
+        const searchTerm = e.target.value.toLowerCase();
+        const rows = document.querySelectorAll('#posts tbody tr');
+        rows.forEach(row => {
+          const title = row.children[1].textContent.toLowerCase();
+          row.style.display = title.includes(searchTerm) ? '' : 'none';
+        });
+      });
+    }
+
+
+
+  </script>
+
+</body>
+</html>
