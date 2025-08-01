@@ -250,9 +250,9 @@ session_start();
           <div class="form-group">
             <select id="role" name="role" required>
               <option value="" disabled selected>Select Role</option>
-              <option value="admin">Admin</option>
-              <option value="blogger">Blogger</option>
-              <option value="reader">Reader</option>
+              <option value="Admin">Admin</option>
+              <option value="Blogger">Blogger</option>
+              <option value="Reader">Reader</option>
             </select>
             <label for="role">Role</label>
           </div>
