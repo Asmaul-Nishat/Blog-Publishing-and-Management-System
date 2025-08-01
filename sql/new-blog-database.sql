@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Aug 01, 2025 at 03:57 AM
+-- Generation Time: Aug 01, 2025 at 05:29 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -84,6 +84,7 @@ CREATE TABLE `contact_messages` (
   `user_id` int(11) DEFAULT NULL,
   `name` varchar(100) DEFAULT NULL,
   `email` varchar(100) DEFAULT NULL,
+  `subject` varchar(255) DEFAULT NULL,
   `message` text DEFAULT NULL,
   `submitted_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -163,6 +164,14 @@ CREATE TABLE `users` (
   `profile_image` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`id`, `fullname`, `username`, `email`, `password`, `role`, `bio`, `profile_image`, `created_at`) VALUES
+(4, 'Asmaul Nishat', 'Nishat', 'nishatsoyati@gmail.com', '$2y$10$UpBX5QPiKwfqTlZGvKkf9.ksz4.lu1j7KL20/JgF25fZ8eRdcd0Pm', 'blogger', NULL, NULL, '2025-08-01 03:00:44'),
+(5, 'Asmaul Hosna', 'Asmaul', 'soyati50@gmail.com', '$2y$10$0u/I5y97xTS7QuG5nd0MvufcGr0TkaFXe1Tf4kQg7jjJ.mnVMKKg.', 'reader', NULL, NULL, '2025-08-01 03:16:44');
 
 --
 -- Indexes for dumped tables
@@ -277,7 +286,7 @@ ALTER TABLE `uploads`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Constraints for dumped tables
