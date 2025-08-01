@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Aug 01, 2025 at 02:42 AM
+-- Generation Time: Aug 01, 2025 at 03:57 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -46,6 +46,17 @@ CREATE TABLE `categories` (
   `name` varchar(100) NOT NULL,
   `description` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `categories`
+--
+
+INSERT INTO `categories` (`id`, `name`, `description`) VALUES
+(1, 'Food', NULL),
+(2, 'Technology', NULL),
+(3, 'Travel', NULL),
+(9, 'Health', NULL),
+(10, 'Education', NULL);
 
 -- --------------------------------------------------------
 
@@ -100,7 +111,11 @@ CREATE TABLE `posts` (
 --
 
 INSERT INTO `posts` (`id`, `user_id`, `title`, `content`, `image`, `category_id`, `status`, `created_at`, `updated_at`) VALUES
-(1, NULL, 'World', 'world is...', '1753918802_alice-alinari-MS371wlcGPo-unsplash.jpg', NULL, 'published', '2025-07-30 23:40:02', '2025-07-30 23:40:02');
+(1, NULL, 'World', 'world is...', '1753918802_alice-alinari-MS371wlcGPo-unsplash.jpg', NULL, 'published', '2025-07-30 23:40:02', '2025-07-30 23:40:02'),
+(7, NULL, 'heloo', 'as', '1754009958_alice-alinari-MS371wlcGPo-unsplash.jpg', 2, 'published', '2025-08-01 00:59:18', '2025-08-01 00:59:18'),
+(8, NULL, 'Looking into the heart', 'It starts with building a relationship when I need to describe myself to someone who can’t see me. Honestly, I’m not into describing myself to someone in just a few words, as my whole being', '1754010368_freestocks-OfaDD5o8hpk-unsplash.jpg', NULL, 'published', '2025-08-01 01:06:08', '2025-08-01 01:06:08'),
+(9, NULL, 'Hearth', 'The still wind serenading the hillssweet rain that drenches the window sillsan echo of joy whispering through the nighta soothing...', '1754010452_aaron-burden-xG8IQMqMITM-unsplash.jpg', NULL, 'published', '2025-08-01 01:07:32', '2025-08-01 01:07:32'),
+(10, NULL, 'The World', 'Travel is the movement of people between different locations, either for leisure or other purposes. It can be done through various modes of transportation like walking, vehicles, or airplanes. The term can also refer to the act of going on a trip, often to a distant place.', '1754010968_karsten-winegeart-Quh5YoaAzfI-unsplash.jpg', 3, 'published', '2025-08-01 01:16:08', '2025-08-01 01:16:08');
 
 -- --------------------------------------------------------
 
@@ -139,6 +154,7 @@ CREATE TABLE `uploads` (
 
 CREATE TABLE `users` (
   `id` int(11) NOT NULL,
+  `fullname` varchar(100) DEFAULT NULL,
   `username` varchar(50) NOT NULL,
   `email` varchar(100) NOT NULL,
   `password` varchar(255) NOT NULL,
@@ -225,7 +241,7 @@ ALTER TABLE `analytics`
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `comments`
@@ -243,7 +259,7 @@ ALTER TABLE `contact_messages`
 -- AUTO_INCREMENT for table `posts`
 --
 ALTER TABLE `posts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `settings`
