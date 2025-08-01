@@ -253,7 +253,7 @@ $result = $conn->query($sql);
 
 <div class="container">
   <section class="hero" tabindex="0" role="banner" aria-label="Featured blog post">
-    <img src="image/jess-bailey-cU7wLFRyWWw-unsplash.jpg" alt="Featured Blog" />
+    <img src="uploads/jess-bailey-cU7wLFRyWWw-unsplash.jpg" alt="Featured Blog" />
     <div class="hero-text" tabindex="0" role="link" aria-label="Explore the Wonders of the Ocean blog post">Explore the Wonders</div>
   </section>
 
