@@ -1,3 +1,7 @@
+<?php
+// about.php — PHP file ready for future PHP code if needed
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -196,11 +200,11 @@
 <body>
 
   <nav>
-    <a href="index.html" class="logo">Blogg</a>
+    <a href="index.php" class="logo">Blogg</a>
     <div class="nav-links">
-      <a href="index.html">Home</a>
-      <a href="create.html">Write Blog</a>
-      <a href="login.html">Login</a>
+      <a href="index.php">Home</a>
+      <a href="create.php">Write Blog</a>
+      <a href="login.php">Login</a>
     </div>
   </nav>
 
@@ -226,7 +230,7 @@
 
     <p>We believe that everyone has a story to tell, and our website makes it simple and enjoyable to share your experiences or expertise with a wider audience. Whether you are an aspiring blogger or a casual reader, you’ll find our platform inviting and supportive.</p>
 
-    <p>Thank you for visiting and being part of our growing community! If you have any questions or want to get involved, feel free to <a href="contact.html">contact us</a>.</p>
+    <p>Thank you for visiting and being part of our growing community! If you have any questions or want to get involved, feel free to <a href="contact.php">contact us</a>.</p>
 
     <div class="footer">© 2025 Our Blog Posting Website. All rights reserved.</div>
   </div>
