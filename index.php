@@ -1,14 +1,50 @@
 <?php
 include 'php/config.php';  // Your DB connection file
 
-// Fetch posts joined with category name
-$sql = "SELECT p.id, p.title, p.content, p.image, c.name AS category_name, p.created_at
-        FROM posts p
-        LEFT JOIN categories c ON p.category_id = c.id
-        WHERE p.status = 'published'
-        ORDER BY p.created_at DESC";
+// Fetch all categories for filter buttons
+$catResult = $conn->query("SELECT id, name FROM categories ORDER BY name ASC");
+$categories = [];
+if ($catResult && $catResult->num_rows > 0) {
+    while ($row = $catResult->fetch_assoc()) {
+        $categories[] = $row;
+    }
+}
 
-$result = $conn->query($sql);
+// Get category filter from URL query param
+$filterCategory = $_GET['category'] ?? 'all';
+
+if ($filterCategory !== 'all') {
+    // Get category_id for selected category
+    $stmtCat = $conn->prepare("SELECT id FROM categories WHERE name = ?");
+    $stmtCat->bind_param("s", $filterCategory);
+    $stmtCat->execute();
+    $stmtCat->bind_result($category_id);
+    if ($stmtCat->fetch()) {
+        // Category exists, filter posts by this id
+        $stmtCat->close();
+        $sql = "SELECT p.id, p.title, p.content, p.image, c.name AS category_name, p.created_at
+                FROM posts p
+                LEFT JOIN categories c ON p.category_id = c.id
+                WHERE p.status = 'published' AND p.category_id = ?
+                ORDER BY p.created_at DESC";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $category_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+    } else {
+        // Category not found, no posts
+        $result = null;
+        $stmtCat->close();
+    }
+} else {
+    // No filtering, show all published posts
+    $sql = "SELECT p.id, p.title, p.content, p.image, c.name AS category_name, p.created_at
+            FROM posts p
+            LEFT JOIN categories c ON p.category_id = c.id
+            WHERE p.status = 'published'
+            ORDER BY p.created_at DESC";
+    $result = $conn->query($sql);
+}
 ?>
 
 <!DOCTYPE html>
@@ -19,8 +55,7 @@ $result = $conn->query($sql);
   <title>Blog Home - MyBlog</title>
   <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap" rel="stylesheet" />
   <style>
-    /* (Your existing CSS here, same as provided in your question) */
-    /* ... */
+    /* Your existing CSS */
     :root {
       --font-family: 'Merriweather', serif;
       --black: #000000;
@@ -259,11 +294,11 @@ $result = $conn->query($sql);
 
   <section class="categories" aria-label="Blog categories">
     <button class="active" type="button" data-category="all">All</button>
-    <button type="button" data-category="Travel">Travel</button>
-    <button type="button" data-category="Food">Food</button>
-    <button type="button" data-category="Technology">Technology</button>
-    <button type="button" data-category="Health">Health</button>
-    <button type="button" data-category="Education">Education</button>
+    <?php foreach ($categories as $cat): ?>
+      <button type="button" data-category="<?= htmlspecialchars($cat['name']) ?>">
+        <?= htmlspecialchars($cat['name']) ?>
+      </button>
+    <?php endforeach; ?>
   </section>
 
   <br />
@@ -312,6 +347,36 @@ $result = $conn->query($sql);
     <a href="#">Privacy Policy</a>
   </p>
 </footer>
+
+<script>
+  document.querySelectorAll('.categories button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      // Remove active class from all buttons
+      document.querySelectorAll('.categories button').forEach(b => b.classList.remove('active'));
+      // Add active class to clicked button
+      btn.classList.add('active');
+      
+      const category = btn.getAttribute('data-category');
+      // Reload page with category filter
+      if(category === 'all') {
+        window.location.href = 'index.php';
+      } else {
+        window.location.href = 'index.php?category=' + encodeURIComponent(category);
+      }
+    });
+  });
+
+  // On page load, set active button based on URL param
+  const urlParams = new URLSearchParams(window.location.search);
+  const currentCategory = urlParams.get('category') || 'all';
+  document.querySelectorAll('.categories button').forEach(btn => {
+    if(btn.getAttribute('data-category') === currentCategory) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
+</script>
 
 </body>
 </html>
