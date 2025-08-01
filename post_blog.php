@@ -22,10 +22,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->bind_param("s", $categoryName);
     $stmt->execute();
     $stmt->bind_result($category_id);
+
     if (!$stmt->fetch()) {
-        $category_id = null;
+        // Category not found, insert new category
+        $stmt->close();
+
+        $insertCat = $conn->prepare("INSERT INTO categories (name) VALUES (?)");
+        $insertCat->bind_param("s", $categoryName);
+
+        if ($insertCat->execute()) {
+            $category_id = $insertCat->insert_id;
+        } else {
+            die("Error inserting category: " . $conn->error);
+        }
+        $insertCat->close();
+    } else {
+        $stmt->close();
     }
-    $stmt->close();
 
     // Handle image input
     if ($imageType === 'url') {
@@ -51,17 +64,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $content = clean_input($_POST['content'] ?? '');
     $status = 'published';
 
-    // **Set user_id to NULL explicitly**
-    $user_id = null; // No logged in user
+    // Set user_id to NULL since no login system yet
+    $user_id = null;
 
-    // Prepare SQL
+    // Insert post into DB
     $insertSql = "INSERT INTO posts (user_id, title, content, image, category_id, status, created_at, updated_at)
                   VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())";
 
     $stmt = $conn->prepare($insertSql);
-    
-    // Bind params with user_id as nullable
-    // For nullable int, use "i" type but bind a PHP variable set to NULL.
     $stmt->bind_param("isssis", $user_id, $title, $content, $imageURL, $category_id, $status);
 
     if ($stmt->execute()) {
