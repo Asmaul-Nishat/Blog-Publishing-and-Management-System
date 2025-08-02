@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Aug 02, 2025 at 01:52 AM
+-- Generation Time: Aug 02, 2025 at 03:15 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -99,7 +99,8 @@ INSERT INTO `contact_messages` (`id`, `user_id`, `name`, `email`, `subject`, `me
 (3, NULL, 'Asmaul', 'nishatsoyati@gmail.com', 'nothing', 'Noooooo', '2025-08-01 04:00:02'),
 (4, NULL, 'Nishat', 'soyati50@gmail.com', 'What?', 'Helloo!', '2025-08-01 04:04:55'),
 (5, NULL, 'Nishat', 'nishatsoyati@gmail.com', 'What Happend?', 'Nothing! Haha', '2025-08-01 04:09:39'),
-(6, NULL, 'Nishat', 'soyati50@gmail.com', 'nothing', 'Helloooooo', '2025-08-01 05:05:03');
+(6, NULL, 'Nishat', 'soyati50@gmail.com', 'nothing', 'Helloooooo', '2025-08-01 05:05:03'),
+(7, NULL, 'Nishat', 'soyati50@gmail.com', 'What Happend?', 'Helloooo, its works', '2025-08-02 00:03:14');
 
 -- --------------------------------------------------------
 
@@ -126,11 +127,13 @@ CREATE TABLE `posts` (
 --
 
 INSERT INTO `posts` (`id`, `user_id`, `title`, `content`, `image`, `category_id`, `status`, `created_at`, `updated_at`, `views`, `author`) VALUES
-(1, NULL, 'World', 'world is...', '1753918802_alice-alinari-MS371wlcGPo-unsplash.jpg', NULL, 'published', '2025-07-30 23:40:02', '2025-07-30 23:40:02', 0, 'Admin'),
-(7, NULL, 'heloo', 'as', '1754009958_alice-alinari-MS371wlcGPo-unsplash.jpg', 2, 'published', '2025-08-01 00:59:18', '2025-08-01 00:59:18', 0, 'Admin'),
-(8, NULL, 'Looking into the heart', 'It starts with building a relationship when I need to describe myself to someone who can’t see me. Honestly, I’m not into describing myself to someone in just a few words, as my whole being', '1754010368_freestocks-OfaDD5o8hpk-unsplash.jpg', NULL, 'published', '2025-08-01 01:06:08', '2025-08-01 01:06:08', 0, 'Admin'),
-(9, NULL, 'Hearth', 'The still wind serenading the hillssweet rain that drenches the window sillsan echo of joy whispering through the nighta soothing...', '1754010452_aaron-burden-xG8IQMqMITM-unsplash.jpg', NULL, 'published', '2025-08-01 01:07:32', '2025-08-01 01:07:32', 0, 'Admin'),
-(10, NULL, 'The World', 'Travel is the movement of people between different locations, either for leisure or other purposes. It can be done through various modes of transportation like walking, vehicles, or airplanes. The term can also refer to the act of going on a trip, often to a distant place.', '1754010968_karsten-winegeart-Quh5YoaAzfI-unsplash.jpg', 3, 'published', '2025-08-01 01:16:08', '2025-08-01 23:47:26', 2, 'Admin');
+(1, NULL, 'World', 'world is...', '1753918802_alice-alinari-MS371wlcGPo-unsplash.jpg', NULL, 'published', '2025-07-30 23:40:02', '2025-08-02 00:00:03', 2, 'Admin'),
+(7, NULL, 'heloo', 'as', '1754009958_alice-alinari-MS371wlcGPo-unsplash.jpg', 2, 'published', '2025-08-01 00:59:18', '2025-08-02 00:01:22', 1, 'Admin'),
+(8, NULL, 'Looking into the heart', 'It starts with building a relationship when I need to describe myself to someone who can’t see me. Honestly, I’m not into describing myself to someone in just a few words, as my whole being', '1754010368_freestocks-OfaDD5o8hpk-unsplash.jpg', NULL, 'published', '2025-08-01 01:06:08', '2025-08-02 00:07:16', 2, 'Admin'),
+(9, NULL, 'Hearth', 'The still wind serenading the hillssweet rain that drenches the window sillsan echo of joy whispering through the nighta soothing...', '1754010452_aaron-burden-xG8IQMqMITM-unsplash.jpg', NULL, 'published', '2025-08-01 01:07:32', '2025-08-02 00:00:59', 2, 'Admin'),
+(10, NULL, 'The World', 'Travel is the movement of people between different locations, either for leisure or other purposes. It can be done through various modes of transportation like walking, vehicles, or airplanes. The term can also refer to the act of going on a trip, often to a distant place.', '1754010968_karsten-winegeart-Quh5YoaAzfI-unsplash.jpg', 3, 'published', '2025-08-01 01:16:08', '2025-08-02 00:01:07', 11, 'Admin'),
+(11, NULL, 'Bucket List Travel: The Top 20 Places In The World!', 'If you’re like most people, the allure of new horizons and uncharted adventures keeps you constantly adding destinations to your travel bucket list. Kuoni—a Britain-based travel company— recently did a study to rank the world’s best bucket list destinations. Kuoni conducted the comprehensive analysis by scouring Google search data for 119 bucket list places to visit in 219 countries. The results paint a vivid picture of travel aspirations, spanning from the breathtaking shores of the Maldives to the thundering majesty of Niagara Falls, encompassing iconic landmarks and awe-inspiring natural wonders along the way.\r\n\r\nAccording to Sheena Paton, senior program manager, this is the first time Kuoni has assembled this travel bucket list . “We’ve previously created travel stories that have analyzed the demand for different locations or the best landmarks to visit, but this unique study looks at every country&#039;s most popular bucket list item,” Paton told me in an interview. “We were intrigued to see how this might vary from country to country and which experiences would come out on top, so we decided to do this study to reveal what travelers around the world want to experience.”\r\n\r\nmaldives top bucket list trip Coming in at the top of the world’s best bucket list destinations is the idyllic cluster of islands known as the Maldives—which is known for its stunning white sands, bright blue waters and incredible sunsets. It topped the travel bucket list for 121 countries. “It’s great to see that a trip to the Maldives is considered a bucket list item for so many people,” says Paton. “It’s a tropical paradise popular amongst honeymooners, families and retirees alike.” Coincidentally, in 2021 Kuoni looked at where the world wants to travel most. “The top destinations to travel to that year were the Maldives, Mexico and Bali, which is interesting because visiting the Maldives also came top as the most searched-for travel bucket list experience in this most recent report,” Paton explains.', '1754093541_960x0.jpg', 3, 'published', '2025-08-02 00:12:21', '2025-08-02 01:02:41', 7, 'Admin'),
+(12, NULL, 'Petra, Jordan', 'this city on the edge of the Wadi Araba was quite literally carved into the rose-colored sandstone of a deep canyon.\r\n\r\nCreated by the Nabateans, Petra (“stone” in Greek) controlled trade routes stretching from Africa to India and China. The Romans later conquered the area and it was eventually abandoned and forgotten until a Swiss explorer rediscovered it in 1812.\r\n\r\nFeatured in Indiana Jones and the Last Crusade, Petra’s famous Treasury was painstakingly chiseled from sand and stone. The hike to Petra’s magnificent Monastery is another must-do.', '1754096374_The-Monastery-Petra-Jordan.jpg', 3, 'published', '2025-08-02 00:59:34', '2025-08-02 00:59:37', 1, 'Admin');
 
 -- --------------------------------------------------------
 
@@ -276,13 +279,13 @@ ALTER TABLE `comments`
 -- AUTO_INCREMENT for table `contact_messages`
 --
 ALTER TABLE `contact_messages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `posts`
 --
 ALTER TABLE `posts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `settings`
