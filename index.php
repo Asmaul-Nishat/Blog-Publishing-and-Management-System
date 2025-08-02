@@ -327,7 +327,7 @@ if ($filterCategory !== 'all') {
       echo '<article class="blog-card" tabindex="0" role="article" aria-label="' . htmlspecialchars($post['title']) . '">';
       echo '<img src="' . $img . '" alt="Image for ' . htmlspecialchars($post['title']) . '" />';
       echo '<div class="blog-content">';
-      echo '<h2 class="blog-title"><a href="blog.php?id=' . (int)$post['id'] . '" aria-label="Read full blog post: ' . htmlspecialchars($post['title']) . '">' . htmlspecialchars($post['title']) . '</a></h2>';
+      echo '<h2 class="blog-title"><a href="blog-view.php?id=' . (int)$post['id'] . '" aria-label="Read full blog post: ' . htmlspecialchars($post['title']) . '">' . htmlspecialchars($post['title']) . '</a></h2>';
       echo '<p class="blog-excerpt">' . htmlspecialchars($excerpt) . '</p>';
       echo '<div class="blog-meta">';
       echo '<span class="author" tabindex="0" aria-haspopup="true" aria-expanded="false" aria-label="Category: ' . htmlspecialchars($post['category_name'] ?? 'Uncategorized') . '">' . htmlspecialchars($post['category_name'] ?? 'Uncategorized') . '</span>';
