@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Aug 01, 2025 at 05:29 AM
+-- Generation Time: Aug 02, 2025 at 01:52 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -89,6 +89,18 @@ CREATE TABLE `contact_messages` (
   `submitted_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `contact_messages`
+--
+
+INSERT INTO `contact_messages` (`id`, `user_id`, `name`, `email`, `subject`, `message`, `submitted_at`) VALUES
+(1, NULL, 'Asmaul', 'soyati50@gmail.com', 'nothing', 'Helloooo', '2025-08-01 03:54:22'),
+(2, NULL, 'Asmaul', 'soyati50@gmail.com', 'nothing', 'helooo', '2025-08-01 03:58:33'),
+(3, NULL, 'Asmaul', 'nishatsoyati@gmail.com', 'nothing', 'Noooooo', '2025-08-01 04:00:02'),
+(4, NULL, 'Nishat', 'soyati50@gmail.com', 'What?', 'Helloo!', '2025-08-01 04:04:55'),
+(5, NULL, 'Nishat', 'nishatsoyati@gmail.com', 'What Happend?', 'Nothing! Haha', '2025-08-01 04:09:39'),
+(6, NULL, 'Nishat', 'soyati50@gmail.com', 'nothing', 'Helloooooo', '2025-08-01 05:05:03');
+
 -- --------------------------------------------------------
 
 --
@@ -104,19 +116,21 @@ CREATE TABLE `posts` (
   `category_id` int(11) DEFAULT NULL,
   `status` enum('draft','published','archived') DEFAULT 'published',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `views` int(11) NOT NULL DEFAULT 0,
+  `author` varchar(255) NOT NULL DEFAULT 'Admin'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `posts`
 --
 
-INSERT INTO `posts` (`id`, `user_id`, `title`, `content`, `image`, `category_id`, `status`, `created_at`, `updated_at`) VALUES
-(1, NULL, 'World', 'world is...', '1753918802_alice-alinari-MS371wlcGPo-unsplash.jpg', NULL, 'published', '2025-07-30 23:40:02', '2025-07-30 23:40:02'),
-(7, NULL, 'heloo', 'as', '1754009958_alice-alinari-MS371wlcGPo-unsplash.jpg', 2, 'published', '2025-08-01 00:59:18', '2025-08-01 00:59:18'),
-(8, NULL, 'Looking into the heart', 'It starts with building a relationship when I need to describe myself to someone who can’t see me. Honestly, I’m not into describing myself to someone in just a few words, as my whole being', '1754010368_freestocks-OfaDD5o8hpk-unsplash.jpg', NULL, 'published', '2025-08-01 01:06:08', '2025-08-01 01:06:08'),
-(9, NULL, 'Hearth', 'The still wind serenading the hillssweet rain that drenches the window sillsan echo of joy whispering through the nighta soothing...', '1754010452_aaron-burden-xG8IQMqMITM-unsplash.jpg', NULL, 'published', '2025-08-01 01:07:32', '2025-08-01 01:07:32'),
-(10, NULL, 'The World', 'Travel is the movement of people between different locations, either for leisure or other purposes. It can be done through various modes of transportation like walking, vehicles, or airplanes. The term can also refer to the act of going on a trip, often to a distant place.', '1754010968_karsten-winegeart-Quh5YoaAzfI-unsplash.jpg', 3, 'published', '2025-08-01 01:16:08', '2025-08-01 01:16:08');
+INSERT INTO `posts` (`id`, `user_id`, `title`, `content`, `image`, `category_id`, `status`, `created_at`, `updated_at`, `views`, `author`) VALUES
+(1, NULL, 'World', 'world is...', '1753918802_alice-alinari-MS371wlcGPo-unsplash.jpg', NULL, 'published', '2025-07-30 23:40:02', '2025-07-30 23:40:02', 0, 'Admin'),
+(7, NULL, 'heloo', 'as', '1754009958_alice-alinari-MS371wlcGPo-unsplash.jpg', 2, 'published', '2025-08-01 00:59:18', '2025-08-01 00:59:18', 0, 'Admin'),
+(8, NULL, 'Looking into the heart', 'It starts with building a relationship when I need to describe myself to someone who can’t see me. Honestly, I’m not into describing myself to someone in just a few words, as my whole being', '1754010368_freestocks-OfaDD5o8hpk-unsplash.jpg', NULL, 'published', '2025-08-01 01:06:08', '2025-08-01 01:06:08', 0, 'Admin'),
+(9, NULL, 'Hearth', 'The still wind serenading the hillssweet rain that drenches the window sillsan echo of joy whispering through the nighta soothing...', '1754010452_aaron-burden-xG8IQMqMITM-unsplash.jpg', NULL, 'published', '2025-08-01 01:07:32', '2025-08-01 01:07:32', 0, 'Admin'),
+(10, NULL, 'The World', 'Travel is the movement of people between different locations, either for leisure or other purposes. It can be done through various modes of transportation like walking, vehicles, or airplanes. The term can also refer to the act of going on a trip, often to a distant place.', '1754010968_karsten-winegeart-Quh5YoaAzfI-unsplash.jpg', 3, 'published', '2025-08-01 01:16:08', '2025-08-01 23:47:26', 2, 'Admin');
 
 -- --------------------------------------------------------
 
@@ -262,7 +276,7 @@ ALTER TABLE `comments`
 -- AUTO_INCREMENT for table `contact_messages`
 --
 ALTER TABLE `contact_messages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `posts`
