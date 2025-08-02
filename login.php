@@ -221,7 +221,7 @@ session_start();
     </div>
 
     <div class="form-side">
-      <div class="close-btn" onclick="window.location.href='index.html'" title="Go back to home">&times;</div>
+      <div class="close-btn" onclick="window.location.href='index.php'" title="Go back to home">&times;</div>
 
       <div class="card">
         <h1>Login</h1>
