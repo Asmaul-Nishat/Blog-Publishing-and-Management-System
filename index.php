@@ -244,6 +244,27 @@ if ($filterCategory !== 'all') {
       flex-wrap: wrap;
       gap: 0.3rem;
     }
+    /* New styles for action buttons */
+    .post-actions {
+      margin-top: 12px;
+      display: flex;
+      gap: 10px;
+    }
+    .post-actions a {
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: var(--radius);
+      background-color: #cb9191;
+      color: var(--black);
+      font-weight: 600;
+      font-size: 0.9rem;
+      user-select: none;
+      transition: background-color 0.3s ease;
+    }
+    .post-actions a:hover {
+      background-color: #b37070;
+      color: #000;
+    }
     footer {
       width: 100%;
       background: var(--white);
@@ -332,7 +353,17 @@ if ($filterCategory !== 'all') {
       echo '<div class="blog-meta">';
       echo '<span class="author" tabindex="0" aria-haspopup="true" aria-expanded="false" aria-label="Category: ' . htmlspecialchars($post['category_name'] ?? 'Uncategorized') . '">' . htmlspecialchars($post['category_name'] ?? 'Uncategorized') . '</span>';
       echo '<span class="upload-time">' . date('F j, Y, g:i a', strtotime($post['created_at'])) . '</span>';
-      echo '</div></div></article>';
+      echo '</div>'; // end blog-meta
+
+      // Action buttons
+      echo '<div class="post-actions">';
+      echo '<a href="like.php?post_id=' . (int)$post['id'] . '" class="btn-like">👍 Like</a>';
+      echo '<a href="blog-view.php?id=' . (int)$post['id'] . '#comments" class="btn-comment">💬 Comment</a>';
+      echo '<a href="#" onclick="sharePost(' . (int)$post['id'] . '); return false;" class="btn-share">🔗 Share</a>';
+      echo '</div>';
+
+      echo '</div>'; // end blog-content
+      echo '</article>';
     }
   } else {
     echo '<p>No blogs found.</p>';
@@ -376,6 +407,21 @@ if ($filterCategory !== 'all') {
       btn.classList.remove('active');
     }
   });
+
+  // Share function
+  function sharePost(postId) {
+    const url = window.location.origin + '/blog-view.php?id=' + postId;
+    if (navigator.share) {
+      navigator.share({
+        title: 'Check out this blog post',
+        url: url,
+      }).catch(console.error);
+    } else {
+      navigator.clipboard.writeText(url).then(() => {
+        alert('Post URL copied to clipboard!');
+      });
+    }
+  }
 </script>
 
 </body>
