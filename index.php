@@ -1,7 +1,8 @@
 <?php
-include 'php/config.php';  // Your DB connection file
+session_start();
+include 'php/config.php';
 
-// Fetch all categories for filter buttons
+// Fetch categories
 $catResult = $conn->query("SELECT id, name FROM categories ORDER BY name ASC");
 $categories = [];
 if ($catResult && $catResult->num_rows > 0) {
@@ -10,17 +11,13 @@ if ($catResult && $catResult->num_rows > 0) {
     }
 }
 
-// Get category filter from URL query param
 $filterCategory = $_GET['category'] ?? 'all';
-
 if ($filterCategory !== 'all') {
-    // Get category_id for selected category
     $stmtCat = $conn->prepare("SELECT id FROM categories WHERE name = ?");
     $stmtCat->bind_param("s", $filterCategory);
     $stmtCat->execute();
     $stmtCat->bind_result($category_id);
     if ($stmtCat->fetch()) {
-        // Category exists, filter posts by this id
         $stmtCat->close();
         $sql = "SELECT p.id, p.title, p.content, p.image, c.name AS category_name, p.created_at
                 FROM posts p
@@ -32,12 +29,10 @@ if ($filterCategory !== 'all') {
         $stmt->execute();
         $result = $stmt->get_result();
     } else {
-        // Category not found, no posts
         $result = null;
         $stmtCat->close();
     }
 } else {
-    // No filtering, show all published posts
     $sql = "SELECT p.id, p.title, p.content, p.image, c.name AS category_name, p.created_at
             FROM posts p
             LEFT JOIN categories c ON p.category_id = c.id
@@ -46,7 +41,6 @@ if ($filterCategory !== 'all') {
     $result = $conn->query($sql);
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -55,7 +49,10 @@ if ($filterCategory !== 'all') {
   <title>Blog Home - MyBlog</title>
   <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap" rel="stylesheet" />
   <style>
-    /* Your existing CSS */
+    /* Keep your existing styles unchanged */
+    /* ... */
+
+/* Index Your existing CSS */
     :root {
       --font-family: 'Merriweather', serif;
       --black: #000000;
@@ -293,6 +290,30 @@ if ($filterCategory !== 'all') {
         justify-content: center;
       }
     }
+
+    .btn-like { cursor: pointer; background: none; border: none; color: #cb9191; font-weight: 600; }
+    .btn-like.liked { color: #333; }
+    /* Inside your <style> */
+.post-actions a,
+.post-actions .btn-like {
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: var(--radius);
+  background-color: #cb9191;
+  color: var(--black);
+  font-weight: 600;
+  font-size: 0.9rem;
+  user-select: none;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+  border: none;
+}
+.post-actions a:hover,
+.post-actions .btn-like:hover {
+  background-color: #b37070;
+  color: #000;
+}
+
   </style>
 </head>
 <body>
@@ -308,61 +329,60 @@ if ($filterCategory !== 'all') {
 </nav>
 
 <div class="container">
-  <section class="hero" tabindex="0" role="banner" aria-label="Featured blog post">
+  <section class="hero">
     <img src="uploads/jess-bailey-cU7wLFRyWWw-unsplash.jpg" alt="Featured Blog" />
-    <div class="hero-text" tabindex="0" role="link" aria-label="Explore the Wonders of the Ocean blog post">Explore the Wonders</div>
+    <div class="hero-text">Explore the Wonders</div>
   </section>
 
-  <section class="categories" aria-label="Blog categories">
-    <button class="active" type="button" data-category="all">All</button>
+  <section class="categories">
+    <button class="active" data-category="all">All</button>
     <?php foreach ($categories as $cat): ?>
-      <button type="button" data-category="<?= htmlspecialchars($cat['name']) ?>">
+      <button data-category="<?= htmlspecialchars($cat['name']) ?>">
         <?= htmlspecialchars($cat['name']) ?>
       </button>
     <?php endforeach; ?>
   </section>
 
-  <br />
-
-  <section class="blog-feed" aria-label="Latest blog posts" id="blogFeed">
+  <section class="blog-feed" id="blogFeed">
   <?php
   if ($result && $result->num_rows > 0) {
     while ($post = $result->fetch_assoc()) {
-      // Prepare excerpt (150 chars max)
       $excerpt = substr(strip_tags($post['content']), 0, 150);
       if (strlen($post['content']) > 150) $excerpt .= '...';
+      $img = $post['image'] ? (preg_match('/^https?:\/\//i', $post['image']) ? htmlspecialchars($post['image']) : 'uploads/' . htmlspecialchars($post['image'])) : 'image/default-blog.jpg';
 
-      // Determine image src
-      $imageSrc = $post['image'] ?? '';
-      if ($imageSrc) {
-        // Check if image is URL or local path
-        if (preg_match('/^https?:\/\//i', $imageSrc)) {
-          $img = htmlspecialchars($imageSrc);
-        } else {
-          $img = 'uploads/' . htmlspecialchars($imageSrc);
-        }
-      } else {
-        $img = 'image/default-blog.jpg'; // default image if none set
+      $likesQuery = $conn->query("SELECT COUNT(*) AS total FROM likes WHERE post_id = " . (int)$post['id']);
+      $likesTotal = $likesQuery->fetch_assoc()['total'] ?? 0;
+
+      $userLiked = false;
+      if (isset($_SESSION['user_id'])) {
+          $uid = $_SESSION['user_id'];
+          $likedCheck = $conn->query("SELECT id FROM likes WHERE user_id = $uid AND post_id = " . (int)$post['id']);
+          $userLiked = $likedCheck->num_rows > 0;
       }
 
-      echo '<article class="blog-card" tabindex="0" role="article" aria-label="' . htmlspecialchars($post['title']) . '">';
+      echo '<article class="blog-card">';
       echo '<img src="' . $img . '" alt="Image for ' . htmlspecialchars($post['title']) . '" />';
       echo '<div class="blog-content">';
-      echo '<h2 class="blog-title"><a href="blog-view.php?id=' . (int)$post['id'] . '" aria-label="Read full blog post: ' . htmlspecialchars($post['title']) . '">' . htmlspecialchars($post['title']) . '</a></h2>';
+      echo '<h2 class="blog-title"><a href="blog-view.php?id=' . (int)$post['id'] . '">' . htmlspecialchars($post['title']) . '</a></h2>';
       echo '<p class="blog-excerpt">' . htmlspecialchars($excerpt) . '</p>';
       echo '<div class="blog-meta">';
-      echo '<span class="author" tabindex="0" aria-haspopup="true" aria-expanded="false" aria-label="Category: ' . htmlspecialchars($post['category_name'] ?? 'Uncategorized') . '">' . htmlspecialchars($post['category_name'] ?? 'Uncategorized') . '</span>';
+      echo '<span class="author">' . htmlspecialchars($post['category_name'] ?? 'Uncategorized') . '</span>';
       echo '<span class="upload-time">' . date('F j, Y, g:i a', strtotime($post['created_at'])) . '</span>';
-      echo '</div>'; // end blog-meta
+      echo '</div>';
 
-      // Action buttons
       echo '<div class="post-actions">';
-      echo '<a href="like.php?post_id=' . (int)$post['id'] . '" class="btn-like">👍 Like</a>';
+      if (isset($_SESSION['user_id'])) {
+        echo '<button class="btn-like ' . ($userLiked ? 'liked' : '') . '" data-id="' . (int)$post['id'] . '">';
+        echo ($userLiked ? '👎 Unlike' : '👍 Like') . ' (<span>' . $likesTotal . '</span>)</button>';
+      } else {
+        echo '<a href="login.php">👍 Like (' . $likesTotal . ')</a>';
+      }
       echo '<a href="blog-view.php?id=' . (int)$post['id'] . '#comments" class="btn-comment">💬 Comment</a>';
       echo '<a href="#" onclick="sharePost(' . (int)$post['id'] . '); return false;" class="btn-share">🔗 Share</a>';
       echo '</div>';
 
-      echo '</div>'; // end blog-content
+      echo '</div>';
       echo '</article>';
     }
   } else {
@@ -373,55 +393,49 @@ if ($filterCategory !== 'all') {
 </div>
 
 <footer>
-  <p>
-    &copy; 2025 MyBlog. All rights reserved. &nbsp;|&nbsp;
-    <a href="#">Privacy Policy</a>
-  </p>
+  <p>&copy; 2025 MyBlog. All rights reserved. | <a href="#">Privacy Policy</a></p>
 </footer>
 
 <script>
-  document.querySelectorAll('.categories button').forEach(btn => {
-    btn.addEventListener('click', () => {
-      // Remove active class from all buttons
-      document.querySelectorAll('.categories button').forEach(b => b.classList.remove('active'));
-      // Add active class to clicked button
-      btn.classList.add('active');
-      
-      const category = btn.getAttribute('data-category');
-      // Reload page with category filter
-      if(category === 'all') {
-        window.location.href = 'index.php';
+document.querySelectorAll('.categories button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.categories button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const category = btn.getAttribute('data-category');
+    window.location.href = category === 'all' ? 'index.php' : 'index.php?category=' + encodeURIComponent(category);
+  });
+});
+
+document.querySelectorAll('.btn-like').forEach(button => {
+  button.addEventListener('click', () => {
+    const postId = button.getAttribute('data-id');
+    const isLiked = button.classList.contains('liked');
+    fetch('like.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ post_id: postId, action: isLiked ? 'unlike' : 'like' })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        button.classList.toggle('liked');
+        button.innerHTML = (data.action === 'liked' ? '👎 Unlike' : '👍 Like') + ' (<span>' + data.likeCount + '</span>)';
       } else {
-        window.location.href = 'index.php?category=' + encodeURIComponent(category);
+        alert(data.message || 'Error');
       }
     });
   });
+});
 
-  // On page load, set active button based on URL param
-  const urlParams = new URLSearchParams(window.location.search);
-  const currentCategory = urlParams.get('category') || 'all';
-  document.querySelectorAll('.categories button').forEach(btn => {
-    if(btn.getAttribute('data-category') === currentCategory) {
-      btn.classList.add('active');
-    } else {
-      btn.classList.remove('active');
-    }
-  });
-
-  // Share function
-  function sharePost(postId) {
-    const url = window.location.origin + '/blog-view.php?id=' + postId;
-    if (navigator.share) {
-      navigator.share({
-        title: 'Check out this blog post',
-        url: url,
-      }).catch(console.error);
-    } else {
-      navigator.clipboard.writeText(url).then(() => {
-        alert('Post URL copied to clipboard!');
-      });
-    }
+function sharePost(postId) {
+  const url = window.location.origin + '/blog-view.php?id=' + postId;
+  if (navigator.share) {
+    navigator.share({ title: 'Check out this blog post', url })
+      .catch(console.error);
+  } else {
+    navigator.clipboard.writeText(url).then(() => alert('Post URL copied!'));
   }
+}
 </script>
 
 </body>
