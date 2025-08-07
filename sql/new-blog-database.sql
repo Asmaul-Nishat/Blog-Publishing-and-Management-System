@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Aug 06, 2025 at 06:03 AM
+-- Generation Time: Aug 06, 2025 at 07:40 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -83,19 +83,15 @@ INSERT INTO `comments` (`id`, `user_id`, `username`, `post_id`, `parent_id`, `co
 (1, 6, 'Soyati Nishat', 15, NULL, 'hello', 0, '2025-08-05 15:37:51'),
 (2, 7, 'Asmaul', 15, NULL, 'nothing', 0, '2025-08-05 15:39:17'),
 (3, 7, 'Asmaul', 15, NULL, 'hello', 0, '2025-08-05 15:39:22'),
-(4, 7, 'Asmaul', 15, NULL, 'welcome', 0, '2025-08-05 15:39:31'),
 (5, 7, 'Asmaul', 15, NULL, 'view the post', 0, '2025-08-05 15:39:41'),
 (6, 7, 'Asmaul', 15, NULL, 'nooo', 0, '2025-08-05 15:39:55'),
 (7, 7, 'Asmaul', 15, NULL, 'noo', 0, '2025-08-05 16:44:43'),
-(8, 7, 'Asmaul', 15, NULL, 'hiii', 0, '2025-08-05 16:44:59'),
 (9, 7, 'Asmaul', 8, NULL, 'Read...', 0, '2025-08-06 08:33:22'),
 (10, 7, 'Asmaul', 12, NULL, 'heal!', 0, '2025-08-06 08:43:08'),
-(11, 7, 'Asmaul', 15, NULL, 'ho', 0, '2025-08-06 09:07:29'),
 (12, 7, 'Asmaul', 15, NULL, 'nothing', 0, '2025-08-06 09:07:45'),
 (13, 7, 'Asmaul', 15, NULL, 'ni', 0, '2025-08-06 09:07:53'),
 (14, 7, 'Asmaul', 8, NULL, 'noo', 0, '2025-08-06 09:17:54'),
-(15, 7, 'Asmaul', 11, NULL, 'no', 0, '2025-08-06 09:34:28'),
-(16, 7, 'Asmaul', 10, NULL, 'Read doneno', 0, '2025-08-06 09:36:51');
+(15, 7, 'Asmaul', 11, NULL, 'nothing', 0, '2025-08-06 09:34:28');
 
 -- --------------------------------------------------------
 
@@ -111,6 +107,13 @@ CREATE TABLE `comment_edits` (
   `edited_by` int(11) NOT NULL,
   `edited_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `comment_edits`
+--
+
+INSERT INTO `comment_edits` (`id`, `comment_id`, `old_comment`, `new_comment`, `edited_by`, `edited_at`) VALUES
+(3, 15, 'no', 'nothing', 6, '2025-08-06 04:11:26');
 
 -- --------------------------------------------------------
 
@@ -203,7 +206,7 @@ INSERT INTO `posts` (`id`, `user_id`, `title`, `content`, `image`, `category_id`
 (12, NULL, 'Petra, Jordan', 'this city on the edge of the Wadi Araba was quite literally carved into the rose-colored sandstone of a deep canyon.\r\n\r\nCreated by the Nabateans, Petra (“stone” in Greek) controlled trade routes stretching from Africa to India and China. The Romans later conquered the area and it was eventually abandoned and forgotten until a Swiss explorer rediscovered it in 1812.\r\n\r\nFeatured in Indiana Jones and the Last Crusade, Petra’s famous Treasury was painstakingly chiseled from sand and stone. The hike to Petra’s magnificent Monastery is another must-do.', '1754096374_The-Monastery-Petra-Jordan.jpg', 3, 'published', '2025-08-02 00:59:34', '2025-08-06 03:20:00', 5, 'Admin'),
 (13, NULL, 'Victoria Falls, Zambia/Zimbabwe!!', 'The UNESCO World Heritage site of Victoria Falls is the largest curtain of falling water in the world. More than twice the height of Niagara Falls, it’s matched only by Iguazu Falls in South America.\r\nExplorer David Livingstone is believed to have been the first European to view Victoria Falls in 1855. Livingstone named his discovery after Queen Victoria but the indigenous name, is Mosi-oa-Tunya, literally, “the smoke that thunders.”\r\n\r\nDuring the high water season (February to May) more than 19 million cubic feet of water plummets over the edge and the falls are at their most dramatic. Bonus – it’s rainbow season! \r\n\r\nDuring the dry season from June to January, the falls often dwindle to a trickle. The shoulder season between high and low is an ideal time for viewing (I visited in February and it was fabulous).', '1754097338_pars-sahin-NMFulKCYrkY-unsplash.jpg', 3, 'published', '2025-08-02 01:15:38', '2025-08-06 03:19:55', 10, 'Admin'),
 (14, 6, 'Soyati', 'Nothing added', 'post_688d78c30d0d6.jpg', 1, 'published', '2025-08-02 02:32:35', '2025-08-06 02:40:06', 16, 'Admin'),
-(15, NULL, 'Wonder the world', 'Element represents a section of a page whose purpose is to provide navigation links, either within the current document or to other documents. Common examples of navigation sections are menus, tables of contents, and indexes.', '1754176956_alexandra-tran-YvIXIBW6bJk-unsplash.jpg', 3, 'published', '2025-08-02 23:22:36', '2025-08-06 03:40:02', 123, 'Admin');
+(15, NULL, 'Wonder the world', 'Element represents a section of a page whose purpose is to provide navigation links, either within the current document or to other documents. Common examples of navigation sections are menus, tables of contents, and indexes.', '1754176956_alexandra-tran-YvIXIBW6bJk-unsplash.jpg', 3, 'published', '2025-08-02 23:22:36', '2025-08-06 04:22:35', 125, 'Admin');
 
 -- --------------------------------------------------------
 
@@ -234,16 +237,16 @@ INSERT INTO `ratings` (`id`, `user_id`, `username`, `post_id`, `rating`, `create
 -- --------------------------------------------------------
 
 --
--- Table structure for table `settings`
+-- Table structure for table `site_settings`
 --
 
-CREATE TABLE `settings` (
+CREATE TABLE `site_settings` (
   `id` int(11) NOT NULL,
-  `site_title` varchar(255) DEFAULT NULL,
-  `site_description` text DEFAULT NULL,
-  `contact_email` varchar(100) DEFAULT NULL,
-  `logo` varchar(255) DEFAULT NULL,
-  `footer_text` text DEFAULT NULL
+  `setting_key` varchar(100) NOT NULL,
+  `setting_value` text NOT NULL,
+  `setting_type` enum('text','email','image','boolean','json') DEFAULT 'text',
+  `description` varchar(255) DEFAULT NULL,
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -353,10 +356,11 @@ ALTER TABLE `ratings`
   ADD KEY `post_id` (`post_id`);
 
 --
--- Indexes for table `settings`
+-- Indexes for table `site_settings`
 --
-ALTER TABLE `settings`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE `site_settings`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `setting_key` (`setting_key`);
 
 --
 -- Indexes for table `uploads`
@@ -399,7 +403,7 @@ ALTER TABLE `comments`
 -- AUTO_INCREMENT for table `comment_edits`
 --
 ALTER TABLE `comment_edits`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `contact_messages`
@@ -423,12 +427,12 @@ ALTER TABLE `posts`
 -- AUTO_INCREMENT for table `ratings`
 --
 ALTER TABLE `ratings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=57;
 
 --
--- AUTO_INCREMENT for table `settings`
+-- AUTO_INCREMENT for table `site_settings`
 --
-ALTER TABLE `settings`
+ALTER TABLE `site_settings`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
