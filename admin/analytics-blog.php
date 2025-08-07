@@ -2,167 +2,312 @@
 session_start();
 require_once '../php/config.php';
 
-// Total posts
-$totalPosts = $conn->query("SELECT COUNT(*) AS count FROM posts")->fetch_assoc()['count'];
+// Fetch Top 5 Posts by Views
+$sqlViews = "SELECT id, title, views FROM posts ORDER BY views DESC LIMIT 5";
+$resultViews = $conn->query($sqlViews);
 
-// Total users
-$totalUsers = $conn->query("SELECT COUNT(*) AS count FROM users")->fetch_assoc()['count'];
+// Fetch Top 5 Posts by Likes
+$sqlLikes = "SELECT posts.id, posts.title, COUNT(likes.id) AS total_likes
+             FROM posts
+             LEFT JOIN likes ON posts.id = likes.post_id
+             GROUP BY posts.id
+             ORDER BY total_likes DESC
+             LIMIT 5";
+$resultLikes = $conn->query($sqlLikes);
 
-// Total comments
-$totalComments = $conn->query("SELECT COUNT(*) AS count FROM comments")->fetch_assoc()['count'];
+// Fetch Top 5 Posts by Comments
+$sqlComments = "SELECT posts.id, posts.title, COUNT(comments.id) AS total_comments
+                FROM posts
+                LEFT JOIN comments ON posts.id = comments.post_id
+                GROUP BY posts.id
+                ORDER BY total_comments DESC
+                LIMIT 5";
+$resultComments = $conn->query($sqlComments);
 
-// Total likes
-$totalLikes = $conn->query("SELECT COUNT(*) AS count FROM likes")->fetch_assoc()['count'];
-
-// Total views (sum of views column in posts)
-$totalViews = $conn->query("SELECT SUM(views) AS total FROM posts")->fetch_assoc()['total'] ?? 0;
-
-// Top 5 popular posts by views
-$popularPosts = $conn->query("SELECT id, title, views FROM posts ORDER BY views DESC LIMIT 5");
-
-// Top 5 active users by number of posts
-$activeUsers = $conn->query("
-    SELECT u.id, u.username, COUNT(p.id) AS post_count 
-    FROM users u 
-    LEFT JOIN posts p ON u.id = p.user_id 
-    GROUP BY u.id 
-    ORDER BY post_count DESC 
-    LIMIT 5
-");
-
+// Fetch Top 5 Posts by Average Ratings
+$sqlRatings = "SELECT posts.id, posts.title, AVG(ratings.rating) AS avg_rating
+               FROM posts
+               LEFT JOIN ratings ON posts.id = ratings.post_id
+               GROUP BY posts.id
+               ORDER BY avg_rating DESC
+               LIMIT 5";
+$resultRatings = $conn->query($sqlRatings);
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Admin Analytics Dashboard</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background: #f9f9f9;
-            color: #333;
-        }
-        h1 {
-            color: #cb9191;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .metrics {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 40px;
-        }
-        .metric-box {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-            width: 18%;
-            text-align: center;
-        }
-        .metric-box h2 {
-            font-size: 2.5rem;
-            margin: 0;
-            color: #cb9191;
-        }
-        .metric-box p {
-            margin: 5px 0 0;
-            font-weight: bold;
-            font-size: 1.1rem;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 30px;
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        }
-        th, td {
-            padding: 12px;
-            border-bottom: 1px solid #ddd;
-            text-align: left;
-        }
-        th {
-            background: #cb9191;
-            color: black;
-        }
-        tbody tr:hover {
-            background: #f0f0f0;
-        }
-        .section-title {
-            margin-top: 40px;
-            font-size: 1.5rem;
-            color: #cb9191;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Analytics</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Merriweather&display=swap');
+
+    body {
+      margin: 0;
+      font-family: 'Merriweather', serif;
+      background: #f0f0f0;
+      color: #000;
+      display: flex;
+    }
+    .sidebar {
+      width: 230px;
+      background: #fff;
+      border-right: 1px solid #ddd;
+      padding: 20px;
+      box-sizing: border-box;
+      height: 100vh;
+      position: fixed;
+      left: 0;
+      top: 0;
+      overflow-y: auto;
+    }
+    .sidebar .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #cb9191;
+      text-align: center;
+      margin-bottom: 2rem;
+      text-decoration: none;
+      display: block;
+    }
+    .sidebar nav a {
+      display: block;
+      padding: 10px;
+      text-decoration: none;
+      color: #000;
+      font-weight: 600;
+      margin-bottom: 8px;
+      border-radius: 10px;
+    }
+    .sidebar nav a:hover,
+    .sidebar nav a.active {
+      background: #cb9191;
+      color: #000;
+    }
+    #menu-toggle {
+      display: none;
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      font-size: 1.8rem;
+      background: #cb9191;
+      color: #000;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      z-index: 1100;
+    }
+    .main-content {
+      flex: 1;
+      margin-left: 230px;
+      padding: 20px;
+      box-sizing: border-box;
+      min-height: 100vh;
+    }
+    header.main-header {
+      background: #cb9191;
+      padding: 15px 20px;
+      border-radius: 10px;
+      color: #000;
+      font-weight: 700;
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+    }
+    /* Tables and typography */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 40px;
+      background: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 12px 15px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+    }
+    th {
+      background: #cb9191;
+      color: #000;
+    }
+    caption {
+      caption-side: top;
+      font-size: 1.2em;
+      font-weight: bold;
+      margin: 15px 0;
+      color: #cb9191;
+    }
+    #analytics-date {
+      display: block;
+      margin: 0 auto 30px auto;
+      font-size: 16px;
+      padding: 8px 10px;
+      width: 200px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      text-align: center;
+    }
+    #chart-container {
+      width: 80%;
+      max-width: 700px;
+      margin: 0 auto 50px auto;
+      background: white;
+      padding: 20px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.1);
+      border-radius: 8px;
+    }
+  </style>
 </head>
 <body>
 
-    <h1>Admin Analytics Dashboard</h1>
+<button id="menu-toggle">☰</button>
 
-    <div class="metrics">
-        <div class="metric-box">
-            <h2><?= $totalPosts ?></h2>
-            <p>Total Posts</p>
-        </div>
-        <div class="metric-box">
-            <h2><?= $totalUsers ?></h2>
-            <p>Total Users</p>
-        </div>
-        <div class="metric-box">
-            <h2><?= $totalComments ?></h2>
-            <p>Total Comments</p>
-        </div>
-        <div class="metric-box">
-            <h2><?= $totalLikes ?></h2>
-            <p>Total Likes</p>
-        </div>
-        <div class="metric-box">
-            <h2><?= $totalViews ?></h2>
-            <p>Total Views</p>
-        </div>
-    </div>
+<aside class="sidebar">
+  <a href="../index.php" class="logo">Blogg</a>
+  <nav>
+    <a href="dashboard.php">🏠 Dashboard</a>
+    <a href="manage-posts.php">📝 Manage Posts</a>
+    <a href="manage-users.php">👤 Manage Users</a>
+    <a href="categories.php">📂 Categories</a>
+    <a href="manage-comments.php">💬 Comments</a>
+    <a href="analytics-blog.php" class="active">📈 Analytics</a>
+    <a href="settings.php">⚙️ Settings</a>
+    <a href="logout.php">🔓 Logout</a>
+  </nav>
+</aside>
 
-    <div>
-        <h2 class="section-title">Top 5 Popular Posts (by Views)</h2>
-        <table>
-            <thead>
-                <tr><th>Post ID</th><th>Title</th><th>Views</th></tr>
-            </thead>
-            <tbody>
-                <?php while($post = $popularPosts->fetch_assoc()): ?>
-                    <tr>
-                        <td><?= htmlspecialchars($post['id']) ?></td>
-                        <td><?= htmlspecialchars($post['title']) ?></td>
-                        <td><?= htmlspecialchars($post['views']) ?></td>
-                    </tr>
-                <?php endwhile; ?>
-            </tbody>
-        </table>
-    </div>
+<div class="main-content">
+  <header class="main-header">Admin Analytics Dashboard</header>
 
-    <div>
-        <h2 class="section-title">Top 5 Active Users (by Posts)</h2>
-        <table>
-            <thead>
-                <tr><th>User ID</th><th>Username</th><th>Number of Posts</th></tr>
-            </thead>
-            <tbody>
-                <?php while($user = $activeUsers->fetch_assoc()): ?>
-                    <tr>
-                        <td><?= htmlspecialchars($user['id']) ?></td>
-                        <td><?= htmlspecialchars($user['username']) ?></td>
-                        <td><?= htmlspecialchars($user['post_count']) ?></td>
-                    </tr>
-                <?php endwhile; ?>
-            </tbody>
-        </table>
-    </div>
+  <!-- Date Picker for Daily Analytics -->
+  <label for="analytics-date" style="display:block; text-align:center; margin-bottom:8px; font-weight:600;">
+    Select Date for Daily Analytics
+  </label>
+  <input type="date" id="analytics-date" max="<?= date('Y-m-d') ?>" value="<?= date('Y-m-d') ?>" />
+
+  <div id="chart-container">
+    <canvas id="dailyChart"></canvas>
+  </div>
+
+  <!-- Top 5 Posts by Views -->
+  <table>
+    <caption>Top 5 Posts by Views</caption>
+    <thead>
+      <tr><th>Post ID</th><th>Title</th><th>Views</th></tr>
+    </thead>
+    <tbody>
+      <?php while ($row = $resultViews->fetch_assoc()): ?>
+        <tr>
+          <td><?= htmlspecialchars($row['id']) ?></td>
+          <td><?= htmlspecialchars($row['title']) ?></td>
+          <td><?= htmlspecialchars($row['views']) ?></td>
+        </tr>
+      <?php endwhile; ?>
+    </tbody>
+  </table>
+
+  <!-- Top 5 Posts by Likes -->
+  <table>
+    <caption>Top 5 Posts by Likes</caption>
+    <thead>
+      <tr><th>Post ID</th><th>Title</th><th>Likes</th></tr>
+    </thead>
+    <tbody>
+      <?php while ($row = $resultLikes->fetch_assoc()): ?>
+        <tr>
+          <td><?= htmlspecialchars($row['id']) ?></td>
+          <td><?= htmlspecialchars($row['title']) ?></td>
+          <td><?= htmlspecialchars($row['total_likes']) ?></td>
+        </tr>
+      <?php endwhile; ?>
+    </tbody>
+  </table>
+
+  <!-- Top 5 Posts by Comments -->
+  <table>
+    <caption>Top 5 Posts by Comments</caption>
+    <thead>
+      <tr><th>Post ID</th><th>Title</th><th>Comments</th></tr>
+    </thead>
+    <tbody>
+      <?php while ($row = $resultComments->fetch_assoc()): ?>
+        <tr>
+          <td><?= htmlspecialchars($row['id']) ?></td>
+          <td><?= htmlspecialchars($row['title']) ?></td>
+          <td><?= htmlspecialchars($row['total_comments']) ?></td>
+        </tr>
+      <?php endwhile; ?>
+    </tbody>
+  </table>
+
+  <!-- Top 5 Posts by Average Ratings -->
+  <table>
+    <caption>Top 5 Posts by Average Ratings</caption>
+    <thead>
+      <tr><th>Post ID</th><th>Title</th><th>Average Rating</th></tr>
+    </thead>
+    <tbody>
+      <?php while ($row = $resultRatings->fetch_assoc()): ?>
+        <tr>
+          <td><?= htmlspecialchars($row['id']) ?></td>
+          <td><?= htmlspecialchars($row['title']) ?></td>
+          <td><?= number_format((float)$row['avg_rating'], 2) ?></td>
+        </tr>
+      <?php endwhile; ?>
+    </tbody>
+  </table>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const ctx = document.getElementById('dailyChart').getContext('2d');
+  let dailyChart;
+
+  async function fetchDailyAnalytics(date) {
+    const response = await fetch(`fetch_daily_analytics.php?date=${date}`);
+    const data = await response.json();
+    return data;
+  }
+
+  function renderChart(data, date) {
+    if (dailyChart) dailyChart.destroy();
+
+    dailyChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Views', 'Likes', 'Comments'],
+        datasets: [{
+          label: `Analytics for ${date}`,
+          data: [data.views, data.likes, data.comments],
+          backgroundColor: ['#d0a3a3ff', '#e2aeaeff', '#cb9191'],
+          borderRadius: 5,
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: { beginAtZero: true, ticks: { stepSize: 1 } }
+        }
+      }
+    });
+  }
+
+  const dateInput = document.getElementById('analytics-date');
+
+  // Initial chart on page load
+  fetchDailyAnalytics(dateInput.value).then(data => renderChart(data, dateInput.value));
+
+  // On date change update chart
+  dateInput.addEventListener('change', () => {
+    const selectedDate = dateInput.value;
+    fetchDailyAnalytics(selectedDate).then(data => renderChart(data, selectedDate));
+  });
+</script>
 
 </body>
 </html>
