@@ -326,7 +326,7 @@ $recentPosts = $conn->query($sqlRecent);
                    alt="<?= htmlspecialchars($row['title']) ?>">
               <div class="blog-content">
                 <h2 class="blog-title">
-                  <a href="../view-blog.php?id=<?= $row['id'] ?>">
+                  <a href="../blog-view.php?id=<?= $row['id'] ?>">
                     <?= htmlspecialchars($row['title']) ?>
                   </a>
                 </h2>
