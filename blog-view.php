@@ -255,62 +255,77 @@ if (isset($_SESSION['user_id'])) {
     <div class="content"><?= nl2br(htmlspecialchars($post['content'])) ?></div>
 
     <!-- Like Button -->
-    <?php if (isset($_SESSION['user_id'])): ?>
-      <button id="likeBtn" class="like-btn <?= $userLiked ? 'liked' : '' ?>">
-        <?= $userLiked ? 'Unlike' : 'Like' ?> (<span id="likeCount"><?= $likeCount ?></span>)
-      </button>
-      <?php if (!empty($likedUsers)): ?>
-        <p class="liked-users">❤️ Liked by <?= implode(", ", $likedUsers) ?><?= ($likeCount > count($likedUsers)) ? " and others" : "" ?></p>
-      <?php endif; ?>
-    <?php else: ?>
-      <p><a href="login.php">Login</a> to like this post.</p>
-    <?php endif; ?>
+<!-- Like Button -->
+<button id="likeBtn" class="like-btn <?= isset($_SESSION['user_id']) && $userLiked ? 'liked' : '' ?>">
+  <?= isset($_SESSION['user_id']) && $userLiked ? 'Unlike' : 'Like' ?> (<span id="likeCount"><?= $likeCount ?></span>)
+</button>
+
+<?php if (!empty($likedUsers)): ?>
+  <p class="liked-users">❤️ Liked by <?= implode(", ", $likedUsers) ?><?= ($likeCount > count($likedUsers)) ? " and others" : "" ?></p>
+<?php endif; ?>
 
     <!-- Rating Section -->
     <div class="rating-section" style="margin-top: 30px;">
-      <strong>Average Rating:</strong> <span id="avgRating"><?= $averageRating ?></span> / 5 (<?= $totalRatings ?> ratings)
-      <br>
-      <?php if (isset($_SESSION['user_id'])): ?>
-        <div id="ratingStars" class="rating-stars" data-post-id="<?= $id ?>">
-          <?php for ($i=1; $i<=5; $i++): ?>
-            <span class="star <?= ($i <= $userRating) ? 'filled' : '' ?>" data-value="<?= $i ?>">&#9733;</span>
-          <?php endfor; ?>
-        </div>
-        <small>Click a star to rate</small>
-      <?php else: ?>
-        <p><a href="login.php">Login</a> to rate this post.</p>
-      <?php endif; ?>
-    </div>
+  <strong>Average Rating:</strong> <span id="avgRating"><?= $averageRating ?></span> / 5 (<?= $totalRatings ?> ratings)
+  <br>
+  <div id="ratingStars" class="rating-stars" data-post-id="<?= $id ?>">
+    <?php for ($i = 1; $i <= 5; $i++): ?>
+      <span class="star <?= ($i <= $userRating) ? 'filled' : '' ?>" data-value="<?= $i ?>">&#9733;</span>
+    <?php endfor; ?>
+  </div>
+  <small>Click a star to rate</small>
+</div>
 
     <!-- Comment Section -->
     <div class="comment-section">
-      <h3>Comments (<?= count($comments) ?>)</h3>
-      <?php if (isset($_SESSION['user_id'])): ?>
-        <form id="commentForm" method="POST" style="margin-bottom: 20px;">
-          <textarea name="comment" id="commentText" rows="3" required placeholder="Write your comment here..."></textarea>
-          <input type="hidden" name="post_id" value="<?= $id ?>">
-          <button type="submit">Submit Comment</button>
-        </form>
-      <?php else: ?>
-        <p><a href="login.php">Login</a> to comment on this post.</p>
-      <?php endif; ?>
+  <h3>Comments (<?= count($comments) ?>)</h3>
 
-      <div id="commentsList">
-        <?php foreach ($comments as $comment): ?>
-          <div class="comment">
-            <span class="username"><?= htmlspecialchars($comment['username']) ?></span>
-            <small><?= date('M d, Y H:i', strtotime($comment['created_at'])) ?></small>
-            <p><?= nl2br(htmlspecialchars($comment['comment'])) ?></p>
-          </div>
-        <?php endforeach; ?>
+  <!-- Comment Form (always visible) -->
+  <form id="commentForm" method="POST" style="margin-bottom: 20px;" action="<?= isset($_SESSION['user_id']) ? 'submit_comment.php' : 'login.php' ?>">
+    <textarea name="comment" id="commentText" rows="3" required placeholder="Write your comment here..."></textarea>
+    <input type="hidden" name="post_id" value="<?= $id ?>">
+    <button type="submit">Submit Comment</button>
+  </form>
+
+  <!-- Comment List -->
+  <div id="commentsList">
+    <?php foreach ($comments as $comment): ?>
+      <div class="comment">
+        <span class="username"><?= htmlspecialchars($comment['username']) ?></span>
+        <small><?= date('M d, Y H:i', strtotime($comment['created_at'])) ?></small>
+        <p><?= nl2br(htmlspecialchars($comment['comment'])) ?></p>
       </div>
-    </div>
+    <?php endforeach; ?>
+  </div>
+</div>
+
 
     <a href="index.php" class="back-link">&larr; Back to Home</a>
   </article>
 </main>
 
 <script>
+  document.getElementById('likeBtn').addEventListener('click', function () {
+    <?php if (!isset($_SESSION['user_id'])): ?>
+      // If not logged in, redirect to login
+      window.location.href = 'login.php';
+    <?php else: ?>
+      // If logged in, send like request
+      fetch('like_post.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: 'post_id=<?= $post['id'] ?>'
+      })
+      .then(response => response.text())
+      .then(data => {
+        // Optionally update like count or reload page
+        location.reload();
+      })
+      .catch(error => console.error('Error:', error));
+    <?php endif; ?>
+  });
 document.addEventListener("DOMContentLoaded", () => {
   const likeBtn = document.getElementById('likeBtn');
   const likeCountSpan = document.getElementById('likeCount');
@@ -336,7 +351,52 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
   }
+  
+//  rating php
+document.querySelectorAll('#ratingStars .star').forEach(function(star) {
+    star.addEventListener('click', function () {
+      const value = this.getAttribute('data-value');
+      const postId = document.getElementById('ratingStars').getAttribute('data-post-id');
 
+      <?php if (!isset($_SESSION['user_id'])): ?>
+        // Redirect to login if not logged in
+        window.location.href = 'login.php';
+      <?php else: ?>
+        // Send AJAX request to submit rating
+        fetch('rate_post.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: 'rating=' + value + '&post_id=' + postId
+        })
+        .then(response => response.text())
+        .then(data => {
+          // Optionally update UI
+          location.reload(); // or update avgRating without reload
+        })
+        .catch(error => console.error('Error:', error));
+      <?php endif; ?>
+    });
+  });
+  //  php for comment 
+    const isLoggedIn = <?= isset($_SESSION['user_id']) ? 'true' : 'false' ?>;
+
+  document.getElementById('commentForm').addEventListener('submit', function(e) {
+    const commentText = document.getElementById('commentText').value.trim();
+
+    if (commentText === '') {
+      e.preventDefault();
+      alert('Please write a comment before submitting.');
+      return;
+    }
+
+    if (!isLoggedIn) {
+      e.preventDefault();
+      // Redirect to login page
+      window.location.href = 'login.php';
+    }
+  });
   const ratingStars = document.getElementById('ratingStars');
   if (ratingStars) {
     ratingStars.addEventListener('click', (e) => {
