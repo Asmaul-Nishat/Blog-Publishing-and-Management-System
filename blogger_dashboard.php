@@ -226,18 +226,6 @@
         padding: 1rem;
         max-width: 100%;
       }
-      .tab-content {
-  display: none;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.tab-content.active {
-  display: block;
-  opacity: 
-  1;
-}
-
     }
   </style>
 </head>
