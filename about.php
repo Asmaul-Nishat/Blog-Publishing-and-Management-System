@@ -232,7 +232,7 @@
 
     <p>Thank you for visiting and being part of our growing community! If you have any questions or want to get involved, feel free to <a href="contact.php">contact us</a>.</p>
 
-    <div class="footer">© 2025 Our Blog Posting Website. All rights reserved.</div>
+    <div class="footer">© 2025 Blogg. All rights reserved.</div>
   </div>
 
 </body>
