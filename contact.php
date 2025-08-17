@@ -315,7 +315,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       <button type="submit">Send Message</button>
     </form>
 
-    <div class="footer">© 2025 Our Blog Posting Website. All rights reserved.</div>
+    <div class="footer">© 2025 Blogg. All rights reserved.</div>
   </div>
 
 </body>
