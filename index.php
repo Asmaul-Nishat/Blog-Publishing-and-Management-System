@@ -12,6 +12,19 @@ if ($catResult && $catResult->num_rows > 0) {
 }
 
 $filterCategory = $_GET['category'] ?? 'all';
+$searchKeyword = $_GET['search'] ?? '';
+
+$searchSQL = '';
+$params = [];
+$types = '';
+
+if ($searchKeyword) {
+    $searchSQL = " AND (p.title LIKE ? OR p.content LIKE ?)";
+    $params[] = '%' . $searchKeyword . '%';
+    $params[] = '%' . $searchKeyword . '%';
+    $types .= 'ss';
+}
+
 if ($filterCategory !== 'all') {
     $stmtCat = $conn->prepare("SELECT id FROM categories WHERE name = ?");
     $stmtCat->bind_param("s", $filterCategory);
@@ -22,10 +35,12 @@ if ($filterCategory !== 'all') {
         $sql = "SELECT p.id, p.title, p.content, p.image, c.name AS category_name, p.created_at
                 FROM posts p
                 LEFT JOIN categories c ON p.category_id = c.id
-                WHERE p.status = 'published' AND p.category_id = ?
+                WHERE p.status = 'published' AND p.category_id = ?" . $searchSQL . "
                 ORDER BY p.created_at DESC";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("i", $category_id);
+        $params = array_merge([$category_id], $params);
+        $types = 'i' . $types;
+        $stmt->bind_param($types, ...$params);
         $stmt->execute();
         $result = $stmt->get_result();
     } else {
@@ -36,10 +51,18 @@ if ($filterCategory !== 'all') {
     $sql = "SELECT p.id, p.title, p.content, p.image, c.name AS category_name, p.created_at
             FROM posts p
             LEFT JOIN categories c ON p.category_id = c.id
-            WHERE p.status = 'published'
+            WHERE p.status = 'published'" . $searchSQL . "
             ORDER BY p.created_at DESC";
-    $result = $conn->query($sql);
+    if ($searchKeyword) {
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param($types, ...$params);
+        $stmt->execute();
+        $result = $stmt->get_result();
+    } else {
+        $result = $conn->query($sql);
+    }
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -156,7 +179,43 @@ if ($filterCategory !== 'all') {
       user-select: none;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
+
+    /* Search Form */
+.search-form {
+  margin-bottom: 1rem;
+  display: flex;
+  gap: 0.5rem; /* space between input and button */
+}
+
+.search-form input[type="text"] {
+  flex: 1;
+  padding: 0.7rem;
+  border-radius: 12px;
+  border: 1px solid #999;
+  font-size: 0.85rem;
+  margin: 0; /* remove vertical margin */
+  box-sizing: border-box;
+}
+
+.search-form button {
+  padding: 0.7rem 1rem; /* match input height */
+  border-radius: 12px;
+  border: none;
+  background: #cb9191;
+  color: #000;
+  cursor: pointer;
+  font-weight: 700;
+  transition: background-color 0.3s ease;
+}
+
+.search-form button:hover {
+  background-color: #b37070;
+}
+
+
+
     .categories {
+      margin-top: 2rem;
       margin-bottom: 2rem;
       padding-bottom: 0.5rem;
       border-bottom: 2px solid var(--gray);
@@ -168,7 +227,7 @@ if ($filterCategory !== 'all') {
     .categories button {
       background: var(--white);
       border: 1px solid var(--gray);
-      padding: 0.5rem 1rem;
+      padding: 0.7rem 1rem;
       border-radius: 20px;
       cursor: pointer;
       font-weight: 600;
@@ -327,12 +386,19 @@ if ($filterCategory !== 'all') {
     <a href="contact.php">Contact</a>
   </div>
 </nav>
-
+ 
 <div class="container">
+  
   <section class="hero">
     <img src="uploads/jess-bailey-cU7wLFRyWWw-unsplash.jpg" alt="Featured Blog" />
     <div class="hero-text">Explore the Wonders</div>
   </section>
+  
+
+<form method="GET" action="index.php" class="search-form">
+  <input type="text" name="search" placeholder="Search blogs..." value="<?= htmlspecialchars($_GET['search'] ?? '') ?>">
+  <button type="submit">Search</button>
+</form>
 
   <section class="categories">
     <button class="active" data-category="all">All</button>
@@ -393,7 +459,7 @@ if ($filterCategory !== 'all') {
 </div>
 
 <footer>
-  <p>&copy; 2025 MyBlog. All rights reserved. | <a href="#">Privacy Policy</a></p>
+  <p>&copy; 2025 Blogg. All rights reserved. | <a href="#">Privacy Policy</a></p>
 </footer>
 
 <script>
