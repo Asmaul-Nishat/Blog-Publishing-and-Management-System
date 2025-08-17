@@ -31,7 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if ($_SESSION['role'] === 'admin') {
                 header("Location: ../Admin/dashboard.php");
             } elseif ($_SESSION['role'] === 'blogger') {
-                header("Location: ../index.php");
+                header("Location: ../blogger/blogger-dashboard.php");
             } else {
                 header("Location: ../index.php");
             }
