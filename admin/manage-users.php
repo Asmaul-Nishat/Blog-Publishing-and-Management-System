@@ -147,7 +147,6 @@ $resultUsers = $conn->query($sqlUsers);
       <td><?= htmlspecialchars($user['role']) ?></td>
       <td><?= date("M d, Y", strtotime($user['created_at'])) ?></td>
       <td class="actions">
-        <a class="btn btn-edit" href="edit-user.php?id=<?= $user['id'] ?>">Edit</a>
         <a class="btn btn-delete" href="delete-user.php?id=<?= $user['id'] ?>" onclick="return confirm('Are you sure you want to delete this user?');">Delete</a>
       </td>
     </tr>
