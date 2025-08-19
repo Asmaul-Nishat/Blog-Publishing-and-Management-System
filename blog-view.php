@@ -11,11 +11,15 @@ $id = intval($_GET['id']);
 
 // Fetch post & category
 $stmt = $conn->prepare("
-    SELECT p.*, c.name AS category_name 
-    FROM posts p 
-    LEFT JOIN categories c ON p.category_id = c.id 
-    WHERE p.id = ? AND p.status = 'published'
+    SELECT p.*, c.name AS category_name, 
+       IFNULL(u.username, 'Admin') AS author
+FROM posts p 
+LEFT JOIN categories c ON p.category_id = c.id 
+LEFT JOIN users u ON p.user_id = u.id
+WHERE p.id = ? AND p.status = 'published'
+
 ");
+
 $stmt->bind_param("i", $id);
 $stmt->execute();
 $result = $stmt->get_result();
