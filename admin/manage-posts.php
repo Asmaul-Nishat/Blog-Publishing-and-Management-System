@@ -8,7 +8,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     exit;
 }
 
-// Pagination settings
+
 $postsPerPage = 6;
 $totalPostsResult = $conn->query("SELECT COUNT(*) AS count FROM posts");
 $totalPosts = $totalPostsResult->fetch_assoc()['count'];
@@ -20,11 +20,23 @@ if ($currentPage > $totalPages) $currentPage = $totalPages;
 
 $offset = ($currentPage - 1) * $postsPerPage;
 
-// Fetch posts for current page
+
 $sqlPosts = "
-    SELECT p.id, p.title, LEFT(p.content, 150) AS excerpt, p.image, p.created_at, IFNULL(u.fullname, 'Admin') AS author
+    SELECT 
+        p.id, 
+        p.title, 
+        LEFT(p.content, 150) AS excerpt, 
+        p.image, 
+        p.created_at, 
+        IFNULL(u.fullname, 'Admin') AS author,
+        IFNULL(like_counts.total_likes, 0) AS total_likes
     FROM posts p
     LEFT JOIN users u ON p.user_id = u.id
+    LEFT JOIN (
+        SELECT post_id, COUNT(*) AS total_likes
+        FROM likes
+        GROUP BY post_id
+    ) like_counts ON p.id = like_counts.post_id
     ORDER BY p.created_at DESC
     LIMIT $offset, $postsPerPage
 ";
@@ -138,7 +150,6 @@ $posts = $conn->query($sqlPosts);
   .actions a:hover {
     color: #a56f6f;
   }
-  /* Pagination */
   .pagination {
     display: flex;
     justify-content: center;
@@ -163,8 +174,8 @@ $posts = $conn->query($sqlPosts);
 <body>
   <aside class="sidebar">
     <a href="../index.php" class="logo">Blogg</a>
-    <nav>
-      <a href="dashboard.php"><span class="icon">🏠</span> Dashboard</a>
+     <nav>
+      <a href="dashboard.php" ><span class="icon">🏠</span> Dashboard</a>
       <a href="manage-posts.php" class="active"><span class="icon">📝</span> Manage Posts</a>
       <a href="manage-users.php"><span class="icon">👤</span> Manage Users</a>
       <a href="categories.php"><span class="icon">📂</span> Categories</a>
@@ -188,6 +199,7 @@ $posts = $conn->query($sqlPosts);
           <th>Excerpt</th>
           <th>Author</th>
           <th>Created At</th>
+          <th>Total Likes</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -200,27 +212,25 @@ $posts = $conn->query($sqlPosts);
           <td><?= htmlspecialchars($post['excerpt']) ?>...</td>
           <td><?= htmlspecialchars($post['author']) ?></td>
           <td><?= date("M d, Y H:i", strtotime($post['created_at'])) ?></td>
+          <td><?= $post['total_likes'] ?></td>
           <td class="actions">
             <a href="edit-post.php?id=<?= $post['id'] ?>">Edit</a>
             <a href="delete-post.php?id=<?= $post['id'] ?>" onclick="return confirm('Are you sure you want to delete this post?');" style="color:red;">Delete</a>
             <br><a href="add-post.php"><span class="icon"></span> Add New Post</a>
-
           </td>
         </tr>
         <?php endwhile; ?>
       </tbody>
     </table>
 
-    <!-- Pagination -->
+    
     <div class="pagination">
       <?php if ($currentPage > 1): ?>
         <a href="?page=<?= $currentPage - 1 ?>">&laquo; Prev</a>
       <?php endif; ?>
-
       <?php for ($page = 1; $page <= $totalPages; $page++): ?>
         <a href="?page=<?= $page ?>" class="<?= $page == $currentPage ? 'active' : '' ?>"><?= $page ?></a>
       <?php endfor; ?>
-
       <?php if ($currentPage < $totalPages): ?>
         <a href="?page=<?= $currentPage + 1 ?>">Next &raquo;</a>
       <?php endif; ?>
