@@ -1,22 +1,22 @@
 <?php
-// update_post.php
+
 include '../config.php';
 session_start();
 
-// Check if user is logged in and is at least a blogger
+
 if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role'], ['admin', 'blogger'])) {
     http_response_code(403);
     echo "Unauthorized access.";
     exit();
 }
 
-// Validate POST data
+
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $post_id = intval($_POST['post_id']);
     $title = trim($_POST['title']);
     $content = trim($_POST['content']);
     $category_id = intval($_POST['category_id']);
-    $status = $_POST['status']; // 'draft' or 'published'
+    $status = $_POST['status']; 
 
     // Basic validation
     if (empty($title) || empty($content) || empty($category_id)) {

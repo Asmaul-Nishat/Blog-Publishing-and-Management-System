@@ -9,7 +9,7 @@ session_start();
   <title>Register Page</title>
   <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap" rel="stylesheet" />
   <style>
-    /* keep your same CSS */
+ 
 
        :root {
       --black: #000;
@@ -59,7 +59,7 @@ session_start();
     .image-side img {
       width: 100%;
       height: 100%;
-      object-fit: contain; /* show full image content */
+      object-fit: contain; 
     }
 
     .form-side {
@@ -69,7 +69,7 @@ session_start();
       justify-content: center;
       align-items: center;
       padding: 3rem 2rem;
-      position: relative; /* added for close btn positioning */
+      position: relative; 
     }
 
     .close-btn {

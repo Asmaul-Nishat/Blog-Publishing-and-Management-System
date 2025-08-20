@@ -2,7 +2,7 @@
 session_start();
 require_once '../php/config.php';
 
-// Restrict to admin only
+
 if ($_SESSION['role'] !== 'admin') {
     header("Location: ../index.php");
     exit;

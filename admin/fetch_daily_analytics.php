@@ -3,8 +3,7 @@ require_once '../php/config.php';
 
 $date = $_GET['date'] ?? date('Y-m-d');
 
-// Prepare SQLs for views, likes, comments on selected date
-// Views: Sum views of posts created on that day (or you may want to track views in a separate table for better accuracy)
+
 $sqlViews = "SELECT SUM(views) AS total_views FROM posts WHERE DATE(created_at) = ?";
 $stmt = $conn->prepare($sqlViews);
 $stmt->bind_param("s", $date);

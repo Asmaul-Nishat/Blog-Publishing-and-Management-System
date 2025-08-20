@@ -2,7 +2,7 @@
 session_start();
 include 'php/config.php';
 
-// Fetch categories
+
 $catResult = $conn->query("SELECT id, name FROM categories ORDER BY name ASC");
 $categories = [];
 if ($catResult && $catResult->num_rows > 0) {
@@ -72,10 +72,7 @@ if ($filterCategory !== 'all') {
   <title>Blog Home - MyBlog</title>
   <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap" rel="stylesheet" />
   <style>
-    /* Keep your existing styles unchanged */
-    /* ... */
-
-/* Index Your existing CSS */
+   
     :root {
       --font-family: 'Merriweather', serif;
       --black: #000000;
@@ -300,7 +297,7 @@ if ($filterCategory !== 'all') {
       flex-wrap: wrap;
       gap: 0.3rem;
     }
-    /* New styles for action buttons */
+   
     .post-actions {
       margin-top: 12px;
       display: flex;
@@ -352,7 +349,7 @@ if ($filterCategory !== 'all') {
 
     .btn-like { cursor: pointer; background: none; border: none; color: #cb9191; font-weight: 600; }
     .btn-like.liked { color: #333; }
-    /* Inside your <style> */
+  
 .post-actions a,
 .post-actions .btn-like {
   text-decoration: none;

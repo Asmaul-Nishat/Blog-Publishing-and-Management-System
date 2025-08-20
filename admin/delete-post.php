@@ -2,7 +2,7 @@
 session_start();
 include '../php/config.php';
 
-// Ensure only admin can access
+
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header("Location: ../login.php");
     exit;
@@ -23,7 +23,7 @@ if ($postResult->num_rows !== 1) {
 }
 $post = $postResult->fetch_assoc();
 
-// Delete image file if exists
+
 if ($post['image'] && file_exists('../uploads/' . $post['image'])) {
     @unlink('../uploads/' . $post['image']);
 }

@@ -1,14 +1,13 @@
 <?php
 session_start();
-require 'config.php'; // your DB connection
+require 'config.php'; 
 
-// Check if user is logged in
 if (!isset($_SESSION['user_id']) || !isset($_SESSION['user_role'])) {
     header("Location: login.php?error=not_logged_in");
     exit();
 }
 
-// Allow only bloggers or admins
+
 if (!in_array($_SESSION['user_role'], ['blogger', 'admin'])) {
     http_response_code(403);
     echo "Access denied. You must be a blogger or admin to create a post.";

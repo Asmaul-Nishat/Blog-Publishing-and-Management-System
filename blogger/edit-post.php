@@ -94,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <title>Edit Post - Blogg Blogger</title>
 <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap" rel="stylesheet" />
 <style>
-  /* (Use your existing CSS styles from previous pages here for consistency) */
+  
   :root {
     --font-family: 'Merriweather', serif;
     --black: #000000;

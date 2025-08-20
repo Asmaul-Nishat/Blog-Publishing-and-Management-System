@@ -82,7 +82,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
   <title>Contact Us - Blog Posting Website</title>
   <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap" rel="stylesheet" />
   <style>
-    /* CSS same as your previous code */
+    
     :root {
       --black: #000000;
       --white: #f0f0f0;

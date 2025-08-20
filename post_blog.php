@@ -1,6 +1,6 @@
 <?php
-// Include database connection
-include 'php/config.php'; // Adjust path if needed
+
+include 'php/config.php'; 
 
 function clean_input($data) {
     return htmlspecialchars(trim($data));
@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->bind_result($category_id);
 
     if (!$stmt->fetch()) {
-        // Category not found, insert new category
+       
         $stmt->close();
 
         $insertCat = $conn->prepare("INSERT INTO categories (name) VALUES (?)");
@@ -64,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $content = clean_input($_POST['content'] ?? '');
     $status = 'published';
 
-    // Set user_id to NULL since no login system yet
+    
     $user_id = null;
 
     // Insert post into DB

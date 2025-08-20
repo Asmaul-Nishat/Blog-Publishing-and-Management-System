@@ -3,12 +3,12 @@ session_start();
 include 'config.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Use 'usernameEmail' to match your form input name
+   
     $username = trim($_POST['usernameEmail']);
     $password = $_POST['password'];
-    $role = strtolower(trim($_POST['role'])); // Normalize role to lowercase
+    $role = strtolower(trim($_POST['role'])); 
 
-    // Prepare SQL with role check
+
     $stmt = $conn->prepare("SELECT id, fullname, username, password, role 
                             FROM users 
                             WHERE (username=? OR email=?) AND role=? LIMIT 1");
@@ -19,15 +19,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($result->num_rows === 1) {
         $user = $result->fetch_assoc();
 
-        // Verify password (assumes passwords are hashed in DB)
         if (password_verify($password, $user['password'])) {
-            // Set session variables
+           
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['fullname'] = $user['fullname'];
             $_SESSION['username'] = $user['username'];
             $_SESSION['role'] = strtolower($user['role']);
 
-            // Redirect based on role
+         
             if ($_SESSION['role'] === 'admin') {
                 header("Location: ../Admin/dashboard.php");
             } elseif ($_SESSION['role'] === 'blogger') {
@@ -39,7 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
-    // On failure, set error and redirect back
+   
     $_SESSION['error'] = "Invalid username, password, or role.";
     header("Location: ../login.php");
     exit();

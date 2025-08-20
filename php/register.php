@@ -7,7 +7,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = trim($_POST['username']);
     $email = trim($_POST['email']);
     $password = $_POST['password'];
-    $role = strtolower(trim($_POST['role'])); // Admin/Blogger/Reader
+    $role = strtolower(trim($_POST['role'])); 
     
     // Validate
     if (empty($fullname) || empty($username) || empty($email) || empty($password) || empty($role)) {

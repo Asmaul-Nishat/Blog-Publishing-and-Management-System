@@ -2,7 +2,7 @@
 session_start();
 include '../php/config.php';
 
-// Ensure only admin can access
+
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header("Location: ../login.php");
     exit;
@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $content = trim($_POST['content'] ?? '');
     $categoryId = (int)($_POST['category'] ?? 0);
 
-    // Validate inputs
+  
     if ($title === '') {
         $errors[] = "Title cannot be empty.";
     }
@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($errors)) {
         $stmt = $conn->prepare("INSERT INTO posts (title, content, category_id, image, user_id, created_at) VALUES (?, ?, ?, ?, ?, NOW())");
-        // Assuming current admin user id is in $_SESSION['user_id']
+        // Assuming current admin user id 
         $userId = $_SESSION['user_id'] ?? 0; 
         $stmt->bind_param("ssisi", $title, $content, $categoryId, $imageName, $userId);
 
@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <title>Add New Post - Blogg Admin</title>
 <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap" rel="stylesheet" />
 <style>
-  /* Use your existing CSS or copy from edit-post.php for consistent styling */
+  
   :root {
     --font-family: 'Merriweather', serif;
     --black: #000000;

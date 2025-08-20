@@ -2,7 +2,7 @@
 session_start();
 include '../php/config.php';
 
-// Ensure only admin can access
+
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header("Location: ../login.php");
     exit;
@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $content = trim($_POST['content'] ?? '');
     $categoryId = (int)($_POST['category'] ?? 0);
 
-    // Validate
+ 
     if ($title === '') {
         $errors[] = "Title cannot be empty.";
     }
@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = "Please select a category.";
     }
 
-    // Handle image upload if any
+   
     $imageName = $post['image'];
     if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
         $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
@@ -94,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <title>Edit Post - Blogg Admin</title>
 <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap" rel="stylesheet" />
 <style>
-  /* (Use your existing CSS styles from previous pages here for consistency) */
+  
   :root {
     --font-family: 'Merriweather', serif;
     --black: #000000;

@@ -311,7 +311,7 @@ if (isset($_SESSION['user_id'])) {
 <script>
   document.getElementById('likeBtn').addEventListener('click', function () {
     <?php if (!isset($_SESSION['user_id'])): ?>
-      // If not logged in, redirect to login
+      
       window.location.href = 'login.php';
     <?php else: ?>
       // If logged in, send like request

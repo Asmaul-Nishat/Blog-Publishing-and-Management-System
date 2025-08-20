@@ -9,7 +9,7 @@ session_start();
   <title>Login Page</title>
   <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap" rel="stylesheet" />
   <style>
-    /* --- Keep your same CSS here --- */
+  
 
        :root {
       --black: #000;
@@ -226,7 +226,7 @@ session_start();
       <div class="card">
         <h1>Login</h1>
 
-        <!-- Show error/success messages -->
+      
         <?php if (isset($_SESSION['error'])): ?>
           <p style="color:red;"><?= $_SESSION['error']; unset($_SESSION['error']); ?></p>
         <?php endif; ?>

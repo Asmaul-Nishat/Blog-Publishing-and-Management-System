@@ -1,5 +1,5 @@
 <?php
-// about.php — PHP file ready for future PHP code if needed
+
 ?>
 
 <!DOCTYPE html>
@@ -37,7 +37,7 @@
       padding-top: 70px; /* space for fixed navbar */
     }
 
-    /* Navbar styles */
+
     nav {
       position: fixed;
       top: 0;

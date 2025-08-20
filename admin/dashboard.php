@@ -2,7 +2,7 @@
 session_start();
 include '../php/config.php';
 
-// Ensure only admin can access
+
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header("Location: ../login.php");
     exit;
@@ -288,7 +288,7 @@ $recentPosts = $conn->query($sqlRecent);
 </head>
 <body>
 
-  <!-- Hamburger button for small screens -->
+
   <button id="sidebar-toggle" aria-label="Toggle sidebar menu">☰</button>
 
   <aside class="sidebar">

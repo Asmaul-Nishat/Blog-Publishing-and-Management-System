@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <title>Add New Post - Blogg Blogger</title>
 <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap" rel="stylesheet" />
 <style>
-  /* Use your existing CSS or copy from edit-post.php for consistent styling */
+  
   :root {
     --font-family: 'Merriweather', serif;
     --black: #000000;

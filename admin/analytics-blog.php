@@ -6,7 +6,7 @@ require_once '../php/config.php';
 $sqlViews = "SELECT id, title, views FROM posts ORDER BY views DESC LIMIT 5";
 $resultViews = $conn->query($sqlViews);
 
-// Fetch Top 5 Posts by Likes
+
 $sqlLikes = "SELECT posts.id, posts.title, COUNT(likes.id) AS total_likes
              FROM posts
              LEFT JOIN likes ON posts.id = likes.post_id
@@ -15,7 +15,7 @@ $sqlLikes = "SELECT posts.id, posts.title, COUNT(likes.id) AS total_likes
              LIMIT 5";
 $resultLikes = $conn->query($sqlLikes);
 
-// Fetch Top 5 Posts by Comments
+
 $sqlComments = "SELECT posts.id, posts.title, COUNT(comments.id) AS total_comments
                 FROM posts
                 LEFT JOIN comments ON posts.id = comments.post_id
@@ -24,7 +24,7 @@ $sqlComments = "SELECT posts.id, posts.title, COUNT(comments.id) AS total_commen
                 LIMIT 5";
 $resultComments = $conn->query($sqlComments);
 
-// Fetch Top 5 Posts by Average Ratings
+
 $sqlRatings = "SELECT posts.id, posts.title, AVG(ratings.rating) AS avg_rating
                FROM posts
                LEFT JOIN ratings ON posts.id = ratings.post_id

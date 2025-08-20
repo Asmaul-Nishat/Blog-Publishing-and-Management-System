@@ -60,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <title>Profile Settings - Blogg</title>
 <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap" rel="stylesheet" />
 <style>
-/* --- Use your dashboard CSS here --- */
+
 
   :root {
     --font-family: 'Merriweather', serif;

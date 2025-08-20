@@ -27,13 +27,13 @@ $stmt->execute();
 $res = $stmt->get_result();
 
 if ($res->num_rows > 0 && $action === 'unlike') {
-    // Unlike
+  
     $delete = $conn->prepare("DELETE FROM likes WHERE user_id = ? AND post_id = ?");
     $delete->bind_param("ii", $user_id, $post_id);
     $delete->execute();
     $delete->close();
 } elseif ($action === 'like') {
-    // Like
+   
     $insert = $conn->prepare("INSERT INTO likes (user_id, username, post_id) VALUES (?, ?, ?)");
     $insert->bind_param("isi", $user_id, $username, $post_id);
     $insert->execute();
